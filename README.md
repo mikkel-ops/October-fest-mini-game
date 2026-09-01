@@ -48,8 +48,9 @@ The console always has helpers, e.g. `game.give('hofbraeu')`, `game.teleport(21,
 |---|---|
 | Wrong tent name, beer, badge color, greeting | `js/tents.js` |
 | Change the map (it's ASCII art!), walked through a wall | `js/map.js` |
-| Tune speed, encounter odds, colors, start position | `js/config.js` |
+| Tune speed, encounter odds, NPC count, colors, start position | `js/config.js` |
 | Looks wrong (canvas drawing, scaling) | `js/draw.js` |
+| Crowd walking wrong, stuck NPCs | `js/npcs.js` |
 | Behaves wrong (movement, input, badges, win) | `js/game.js` |
 | Popups, badge tray, win screen, sounds | `js/ui.js` |
 | **Add a real challenge for a tent** | `js/challenges.js` (registry — see comment there) |

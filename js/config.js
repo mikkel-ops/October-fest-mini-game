@@ -12,6 +12,12 @@ const CONFIG = {
   START_TX: 21,    // player start tile, x (column)
   START_TY: 12,    // player start tile, y (row)
 
+  NPC_COUNT: 8,        // festival-goers wandering the grounds
+  NPC_STEP_MS: 220,    // slower than the player — they're strolling, not speed-running
+  NPC_TURN_MS: 140,    // pause after a turn before the next step
+  NPC_PAUSE_MIN: 400,  // idle time after a step / blocked path (ms)
+  NPC_PAUSE_MAX: 2400,
+
   // world colors
   COLORS: {
     grass:      '#79b74a',

@@ -1,0 +1,30 @@
+---
+description: Keep Wiesn Quest on Oktoberfest / Bavarian theme
+alwaysApply: true
+---
+
+# Oktoberfest theme
+
+This is **Wiesn Quest**: a party-TV Pokémon-style walk around the Theresienwiese. New work must feel like Oktoberfest, not a generic RPG.
+
+## Do
+
+- Dress people in Tracht: Lederhosen, Dirndl, Trachtenhut, Bedienung with a Maß
+- Pull flavor from the Wiesn: 14 tents, brewery badges, streets, Maßkrüge, pretzels, Lebkuchenherz, Oompah
+- Mix English with Bavarian/German festival talk (`O'zapft is!`, `G'suffa!`, real tent names)
+- Use tent brand colors, Bavarian blue/white, Wiesn gold, and the grass/street/fence palette in `config.js`
+- Keep the chunky rectangle pixel sprites — no new art pipeline
+
+## Don't
+
+- Generic medieval villagers, fantasy classes, modern streetwear, or off-theme props
+- Invent tents, beers, or a map that contradict `tents.js` / the real Wiesn numbering
+- Sterile UI copy with no festival voice
+
+```
+// ❌ generic
+{ name: 'Guard', shirt: '#3366cc', prop: 'sword' }
+
+// ✅ Wiesn
+{ name: 'Sepp', style: 'lederhosen', shirt: '#c41e3a', vest: '#5b3a1e', prop: 'mug' }
+```
