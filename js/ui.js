@@ -8,8 +8,8 @@ const UI = {
   modalShownAt: 0,  // when the modal opened — briefly blocks Enter so popups can't be spam-skipped
 
   // ---- badge discs -----------------------------------------------------------
-  // One badge = a colored disc in the brewery's signature colors with its
-  // monogram, plus the tent number (brands repeat across tents, numbers don't).
+  // One badge = the tent's official mark on a disc, plus the tent number
+  // (several tents share a brewery, so the number is what distinguishes them).
 
   makeDisc: function (tent, locked) {
     const disc = document.createElement('div');
@@ -17,9 +17,17 @@ const UI = {
     if (locked) {
       disc.textContent = '?';
     } else {
-      disc.textContent = tent.monogram;
-      disc.style.background = tent.colors[0];
-      disc.style.color = tent.colors[1];
+      disc.style.background = tent.logoBg || tent.colors[0];
+      const face = document.createElement('span');
+      face.className = 'disc-face';
+      const img = document.createElement('img');
+      img.className = 'disc-logo';
+      img.src = tent.logo;
+      img.alt = tent.name;
+      img.draggable = false;
+      if (tent.logoFilter) img.style.filter = tent.logoFilter;
+      face.appendChild(img);
+      disc.appendChild(face);
     }
     const num = document.createElement('span');
     num.className = 'disc-num';

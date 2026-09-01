@@ -34,11 +34,17 @@ const CONFIG = {
 
   // the player sprite: a lad in Lederhosen
   PLAYER: {
-    hat:   '#2e7d32',
-    skin:  '#e8b98a',
-    shirt: '#fdfdfd',
-    vest:  '#5b3a1e',
-    legs:  '#8a5a2b',
+    hat:      '#2e7d32',
+    hatBand:  '#c9a227',
+    feather:  '#f4efe2',
+    skin:     '#e8b98a',
+    shirt:    '#fff8e7',
+    leder:    '#6b3e1f',
+    lederDark:'#4a2a12',
+    strap:    '#8a5a2b',
+    sock:     '#f4efe2',
+    shoe:     '#3a2414',
+    hair:     '#3a2a1a',
   },
 };
 
