@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  WIESN QUEST — an Oktoberfest mini-game.
+
+  HOW TO RUN:   just double-click this file (or `python3 -m http.server` and
+                open http://localhost:8000 if your browser is picky).
+                Best on a laptop plugged into the TV, running Chrome. Press F
+                for fullscreen.
+
+  HOW TO PLAY:  walk with arrow keys / WASD. Step into a tent entrance to take
+                its challenge and win its beer badge. Collect all 14!
+
+  HOW TO DEBUG: open with ?debug=1 (or press ` backtick in game) — grid,
+                collision tint, teleport hotkeys, live stats panel. See the
+                README for the full map of which file owns what.
+
+  IMPORTANT:    keep these plain <script> tags and do NOT add ES module
+                imports or fetch() calls — they silently break the
+                double-click (file://) way of running the game.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wiesn Quest 🍺</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="boot-errors" hidden></div>
+
+  <!-- the world: canvas + tent number labels scale together inside #stage -->
+  <div id="playarea">
+    <div id="stage">
+      <canvas id="world"></canvas>
+      <div id="labels"></div>
+    </div>
+  </div>
+
+  <!-- badge tray: 14 slots + counter -->
+  <div id="traybar">
+    <div id="tray"></div>
+    <div id="counter">0 / 14</div>
+  </div>
+
+  <!-- overlays -->
+  <div id="hint">Walk: arrow keys / WASD &nbsp;·&nbsp; F: fullscreen</div>
+  <div id="toast"></div>
+
+  <div id="modal" hidden>
+    <div id="modal-box">
+      <div id="modal-title"></div>
+      <div id="modal-disc"></div>
+      <div id="modal-body"></div>
+      <div id="modal-confirm"></div>
+    </div>
+  </div>
+
+  <div id="win" hidden>
+    <div id="win-badges"></div>
+    <div id="win-text">
+      <h1>O’zapft is!</h1>
+      <p>You conquered all 14 tents of the Wiesn! 🍻</p>
+      <p class="win-again">Press Enter to play again</p>
+    </div>
+  </div>
+
+  <pre id="debug-panel" hidden></pre>
+
+  <!-- load order matters: data first, then UI/drawing, game.js last (it boots everything).
+       Debugging tip: wrong tent info → tents.js · walked through a wall → map.js
+       · looks wrong → draw.js · behaves wrong → game.js -->
+  <script src="js/config.js"></script>
+  <script src="js/tents.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/encounters.js"></script>
+  <script src="js/challenges.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/draw.js"></script>
+  <script src="js/debug.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

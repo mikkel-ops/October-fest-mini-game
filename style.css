@@ -1,0 +1,284 @@
+/* style.css — layout and looks of everything that is HTML (the canvas painting
+   itself lives in js/draw.js). Fonts scale with the screen via clamp()/vmin so
+   text stays readable from the couch on a TV. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #101418; /* letterbox color around the game */
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #f5e6c8;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5vmin; /* small safe margin — some TVs crop the outermost edge */
+}
+
+/* ---- the world -------------------------------------------------------------- */
+
+#playarea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0; /* lets flexbox actually shrink this area */
+}
+
+#stage { position: relative; }
+
+#world {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated; /* keep the chunky pixels crisp when upscaled */
+  border-radius: 4px;
+}
+
+/* tent number chips floating over the map (positioned in % from ui.js) */
+.tent-chip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 1.6em;
+  padding: 0.05em 0.25em;
+  border-radius: 1em;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  font-size: clamp(10px, 1.6vmin, 22px);
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+/* ---- badge tray --------------------------------------------------------------- */
+
+#traybar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2vmin;
+  padding-top: 1vmin;
+}
+
+#tray { display: flex; gap: 0.8vmin; }
+
+.slot { position: relative; }
+
+.disc {
+  position: relative;
+  width: clamp(28px, 5.5vmin, 64px);
+  height: clamp(28px, 5.5vmin, 64px);
+  border-radius: 50%;
+  border: 3px solid #d4af37; /* the gold badge ring */
+  background: #3a3f45;
+  color: #7d838a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: clamp(12px, 2.4vmin, 28px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.disc.locked { border-color: #565c63; }
+
+.disc-num {
+  position: absolute;
+  bottom: -0.4em;
+  right: -0.4em;
+  background: #d4af37;
+  color: #2b2b2b;
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5em;
+  font-weight: 900;
+}
+
+.disc.locked .disc-num { background: #565c63; color: #23272b; }
+
+@keyframes pop {
+  0% { transform: scale(0.2); }
+  60% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.slot.pop .disc { animation: pop 0.5s ease-out; }
+
+#counter {
+  font-size: clamp(16px, 3.2vmin, 40px);
+  font-weight: 900;
+  color: #d4af37;
+  min-width: 3.5em;
+}
+
+/* ---- hint & toast ---------------------------------------------------------------- */
+
+#hint {
+  position: fixed;
+  top: 2.2vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(16, 20, 24, 0.85);
+  padding: 0.8vmin 2vmin;
+  border-radius: 2em;
+  font-size: clamp(12px, 2vmin, 24px);
+  transition: opacity 1s;
+  pointer-events: none;
+  z-index: 30;
+}
+#hint.faded { opacity: 0; }
+
+#toast {
+  position: fixed;
+  bottom: 12vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(16, 20, 24, 0.9);
+  border: 2px solid #d4af37;
+  padding: 1vmin 2.5vmin;
+  border-radius: 2em;
+  font-size: clamp(13px, 2.2vmin, 28px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+#toast.show { animation: toast-in-out 2.2s ease; }
+@keyframes toast-in-out {
+  0% { opacity: 0; transform: translate(-50%, 1em); }
+  12%, 82% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; }
+}
+
+/* ---- modal (challenges, encounters, badge fanfare) --------------------------------- */
+
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+/* `display: flex` above would defeat the hidden attribute without this rule */
+#modal[hidden] { display: none !important; }
+
+#modal-box {
+  --accent: #5b3a1e;
+  --accent-text: #ffffff;
+  background: #fdf6e3;
+  color: #2b2b2b;
+  border: 6px solid var(--accent);
+  border-radius: 14px;
+  max-width: min(80vw, 700px);
+  padding: 3vmin 4vmin;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+  animation: pop 0.35s ease-out;
+}
+
+#modal-title {
+  background: var(--accent);
+  color: var(--accent-text);
+  margin: -3vmin -4vmin 2vmin;
+  padding: 1.2vmin;
+  border-radius: 6px 6px 0 0;
+  font-size: clamp(18px, 3.4vmin, 44px);
+  font-weight: 900;
+}
+
+#modal-disc { display: flex; justify-content: center; }
+#modal-disc .disc.big {
+  width: clamp(80px, 16vmin, 180px);
+  height: clamp(80px, 16vmin, 180px);
+  font-size: clamp(32px, 7vmin, 80px);
+  border-width: 6px;
+  margin-bottom: 1.5vmin;
+  animation: pop 0.6s ease-out;
+}
+
+#modal-body { font-size: clamp(14px, 2.4vmin, 30px); line-height: 1.45; }
+
+#modal-confirm {
+  margin-top: 2.5vmin;
+  display: inline-block;
+  background: var(--accent);
+  color: var(--accent-text);
+  padding: 1vmin 3vmin;
+  border-radius: 2em;
+  font-size: clamp(14px, 2.4vmin, 30px);
+  font-weight: 800;
+}
+
+/* ---- win screen ----------------------------------------------------------------------- */
+
+#win {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #2c3e50 0%, #101418 75%);
+  z-index: 50;
+}
+
+#win-badges { position: absolute; inset: 8vmin; }
+
+/* win discs need their own pop keyframes: the shared `pop` would override the
+   centering translate(-50%,-50%) while animating, making discs jump around */
+@keyframes win-pop {
+  0% { transform: translate(-50%, -50%) scale(0.2); }
+  60% { transform: translate(-50%, -50%) scale(1.35); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+.win-disc {
+  transform: translate(-50%, -50%);
+  animation: win-pop 0.6s ease-out backwards;
+  width: clamp(40px, 9vmin, 110px) !important;
+  height: clamp(40px, 9vmin, 110px) !important;
+  font-size: clamp(16px, 4vmin, 48px) !important;
+}
+
+#win-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+#win-text h1 { font-size: clamp(36px, 9vmin, 130px); color: #d4af37; }
+#win-text p { font-size: clamp(16px, 3vmin, 40px); margin-top: 1.5vmin; }
+#win-text .win-again { opacity: 0.75; animation: blink 1.6s infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+
+/* ---- boot errors & debug panel ----------------------------------------------------------- */
+
+#boot-errors {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #b91c1c;
+  color: #fff;
+  padding: 1vmin 2vmin;
+  font-size: clamp(12px, 1.8vmin, 20px);
+  z-index: 100;
+}
+
+#debug-panel {
+  position: fixed;
+  top: 2vmin;
+  right: 2vmin;
+  background: rgba(0, 0, 0, 0.8);
+  color: #7CFC00;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: clamp(10px, 1.6vmin, 18px);
+  padding: 1.2vmin 1.6vmin;
+  border-radius: 8px;
+  z-index: 60;
+  white-space: pre;
+}
