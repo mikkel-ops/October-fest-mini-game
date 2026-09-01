@@ -6,6 +6,8 @@ Collect all 14 and... *O'zapft is!*
 
 Built for a party big screen: no build step, no dependencies, no assets.
 
+![Wiesn Quest — the Theresienwiese map with 3 of 14 badges collected](assets/screenshot.png)
+
 ## Run it
 
 Double-click `index.html`. That's it.
