@@ -1,6 +1,6 @@
 // draw.js — everything painted on the <canvas>: the world tiles and the player.
-// The canvas has a FIXED internal resolution (map size × TILE) and is scaled up
-// by whole numbers to fit the screen, so pixels stay square and crisp on a TV.
+// The canvas has a FIXED internal resolution (map size × TILE) and is stretched
+// to fill the browser window. CSS `image-rendering: pixelated` keeps tiles crisp.
 // If the game LOOKS wrong, the fix is in this file (or a color in config.js).
 
 const Draw = {
@@ -14,17 +14,15 @@ const Draw = {
     Draw.canvas.height = MAP_H * CONFIG.TILE;  // e.g. 26*16 = 416
     Draw.ctx = Draw.canvas.getContext('2d');
     window.addEventListener('resize', Draw.fit);
+    document.addEventListener('fullscreenchange', Draw.fit);
     Draw.fit();
   },
 
-  // Scale the canvas up by a whole number (2x, 3x...) to fill the play area,
-  // centered with letterboxing. Whole numbers keep the pixel art crisp.
+  // Scale the stage to COVER the viewport (no letterbox, square pixels).
+  // A little of the outer fence may clip on odd aspect ratios.
   fit: function () {
     const area = document.getElementById('playarea');
-    const availW = area.clientWidth;
-    const availH = area.clientHeight;
-    let scale = Math.min(availW / Draw.canvas.width, availH / Draw.canvas.height);
-    if (scale > 1) scale = Math.floor(scale); // integer upscale; tiny screens may downscale fractionally
+    const scale = Math.max(area.clientWidth / Draw.canvas.width, area.clientHeight / Draw.canvas.height);
     const stage = document.getElementById('stage');
     stage.style.width = (Draw.canvas.width * scale) + 'px';
     stage.style.height = (Draw.canvas.height * scale) + 'px';
@@ -99,51 +97,90 @@ const Draw = {
   },
 
   // ---- the player -----------------------------------------------------------------
-  // A chunky little lad in Lederhosen, built from rectangles. Two walk frames
-  // (legs swap), four facings (eye placement + hat brim shift).
+  // A chunky little lad in Lederhosen: green hat + feather, white shirt,
+  // leather shorts with H-suspenders, white socks, brown shoes.
+  // Two walk frames (legs swap), four facings (eyes / brim / feather).
 
   drawPlayer: function (now) {
     const ctx = Draw.ctx;
     const P = CONFIG.PLAYER;
     const p = state.player;
-    const x = Math.round(p.px) + 2;              // sprite is 12px wide inside the 16px tile
+    const x = Math.round(p.px) + 1;              // 14px-wide sprite inside the 16px tile
     const y = Math.round(p.py) + (p.moving && p.animFrame ? 0 : 1);
+    const stride = (p.moving && p.animFrame) ? 1 : 0;
+    const faceLeft = p.facing === 'left';
+    const faceRight = p.facing === 'right';
+    const faceDown = p.facing === 'down';
+    const faceUp = p.facing === 'up';
 
     // soft shadow + pulsing outline so the player is easy to spot from the couch
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.fillRect(x + 1, y + 13, 10, 2);
+    ctx.fillRect(x + 1, y + 14, 12, 2);
     const pulse = 0.35 + 0.25 * Math.sin(now / 300);
     ctx.fillStyle = 'rgba(255,255,255,' + pulse.toFixed(2) + ')';
-    ctx.fillRect(x - 1, y - 1, 14, 16);
+    ctx.fillRect(x - 1, y - 2, 16, 18);
 
-    // hat
+    // tyrolean hat (green crown, gold band, brim that leans with facing)
     ctx.fillStyle = P.hat;
-    ctx.fillRect(x + 2, y, 8, 3);
-    if (p.facing === 'left') ctx.fillRect(x, y + 2, 4, 1);        // brim
-    else if (p.facing === 'right') ctx.fillRect(x + 8, y + 2, 4, 1);
-    else ctx.fillRect(x + 1, y + 2, 10, 1);
+    ctx.fillRect(x + 3, y, 8, 3);
+    if (faceLeft) ctx.fillRect(x, y + 2, 6, 2);
+    else if (faceRight) ctx.fillRect(x + 8, y + 2, 6, 2);
+    else ctx.fillRect(x + 1, y + 2, 12, 2);
+    ctx.fillStyle = P.hatBand;
+    ctx.fillRect(x + 3, y + 2, 8, 1);
 
-    // face
-    ctx.fillStyle = P.skin;
-    ctx.fillRect(x + 3, y + 3, 6, 4);
-    ctx.fillStyle = '#3a2a1a';
-    if (p.facing === 'down') { ctx.fillRect(x + 4, y + 5, 1, 1); ctx.fillRect(x + 7, y + 5, 1, 1); }
-    if (p.facing === 'left') { ctx.fillRect(x + 3, y + 5, 1, 1); }
-    if (p.facing === 'right') { ctx.fillRect(x + 8, y + 5, 1, 1); }
-    // (facing 'up' = back of the head, no eyes)
+    // white feather on the hat
+    ctx.fillStyle = P.feather;
+    if (faceLeft) {
+      ctx.fillRect(x + 1, y - 1, 2, 3);
+      ctx.fillRect(x, y - 2, 2, 2);
+    } else {
+      ctx.fillRect(x + 11, y - 1, 2, 3);
+      ctx.fillRect(x + 12, y - 2, 2, 2);
+    }
 
-    // shirt + Lederhosen vest straps
+    // head: hair from behind, face from the front/sides
+    if (faceUp) {
+      ctx.fillStyle = P.hair;
+      ctx.fillRect(x + 4, y + 4, 6, 3);
+    } else {
+      ctx.fillStyle = P.skin;
+      ctx.fillRect(x + 4, y + 4, 6, 3);
+      ctx.fillStyle = P.hair;
+      if (faceDown) { ctx.fillRect(x + 5, y + 5, 1, 1); ctx.fillRect(x + 8, y + 5, 1, 1); }
+      if (faceLeft) ctx.fillRect(x + 4, y + 5, 1, 1);
+      if (faceRight) ctx.fillRect(x + 9, y + 5, 1, 1);
+      if (faceDown) ctx.fillRect(x + 6, y + 6, 2, 1); // little Wiesn moustache
+    }
+
+    // white shirt
     ctx.fillStyle = P.shirt;
-    ctx.fillRect(x + 2, y + 7, 8, 4);
-    ctx.fillStyle = P.vest;
-    ctx.fillRect(x + 3, y + 7, 2, 4);
-    ctx.fillRect(x + 7, y + 7, 2, 4);
+    ctx.fillRect(x + 2, y + 7, 10, 3);
 
-    // legs (swap on each step for a walk cycle)
-    ctx.fillStyle = P.legs;
-    const stride = (p.moving && p.animFrame) ? 1 : 0;
-    ctx.fillRect(x + 3, y + 11, 2, 3 + stride);
-    ctx.fillRect(x + 7, y + 11 + stride, 2, 3);
+    // leather shorts + front flap
+    ctx.fillStyle = P.leder;
+    ctx.fillRect(x + 2, y + 9, 10, 3);
+    ctx.fillStyle = P.lederDark;
+    ctx.fillRect(x + 6, y + 9, 2, 2);
+    ctx.fillStyle = P.hatBand; // tiny gold stitch on the flap
+    ctx.fillRect(x + 6, y + 10, 2, 1);
+
+    // H-suspenders: two thick straps + a cross-bar, gold buttons
+    ctx.fillStyle = P.strap;
+    ctx.fillRect(x + 3, y + 7, 2, 4);
+    ctx.fillRect(x + 9, y + 7, 2, 4);
+    ctx.fillRect(x + 3, y + 8, 8, 1);
+    ctx.fillStyle = P.hatBand;
+    ctx.fillRect(x + 3, y + 8, 1, 1);
+    ctx.fillRect(x + 10, y + 8, 1, 1);
+
+    // white knee-socks + brown shoes (swap on each step)
+    ctx.fillStyle = P.sock;
+    ctx.fillRect(x + 3, y + 12, 3, 2);
+    ctx.fillRect(x + 8, y + 12 + stride, 3, 2);
+    ctx.fillStyle = P.shoe;
+    ctx.fillRect(x + 2, y + 14, 4, 1);
+    ctx.fillRect(x + 8, y + 14 + stride, 4, 1);
   },
 
   // called every frame from the game loop in game.js
