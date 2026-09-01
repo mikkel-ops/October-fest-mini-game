@@ -81,6 +81,7 @@ const Debug = {
       'badges: ' + state.badges.size + ' / ' + TENTS.length,
       'steps since encounter: ' + state.stepsSinceEncounter + ' (cooldown ' + CONFIG.ENCOUNTER_COOLDOWN + ')',
       'last encounter roll: ' + (state.lastRoll === null ? '—' : state.lastRoll.toFixed(3)) + ' vs ' + CONFIG.ENCOUNTER_CHANCE,
+      'npcs: ' + state.npcs.map(function (n) { return n.kind.name + '(' + n.tx + ',' + n.ty + ')'; }).join(' '),
       '',
       'teleport: 1-9 0 - = [ ]   B badge   N all',
       'E encounter   R reset   ` close',

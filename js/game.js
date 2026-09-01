@@ -12,6 +12,7 @@ const state = {
   lastRoll: null,          // the most recent encounter dice roll (shown in debug panel)
   winShownAt: 0,           // when the win screen appeared (guards against accidental instant reset)
   debug: CONFIG.DEBUG,
+  npcs: [],                // festival-goers; spawned by Npcs.spawn()
   player: {
     tx: CONFIG.START_TX, ty: CONFIG.START_TY,  // tile the player stands on
     px: CONFIG.START_TX * CONFIG.TILE,         // pixel position (interpolated while walking)
@@ -195,6 +196,7 @@ const game = {
     state.mode = 'walk';
     game.teleport(CONFIG.START_TX, CONFIG.START_TY);
     state.player.facing = 'down';
+    Npcs.spawn();
     UI.hideOverlays();
     UI.refreshTray();
     logEvent('Game reset. Auf geht’s!');
@@ -214,6 +216,7 @@ function init() {
   }
 
   computeTentTiles();
+  Npcs.spawn();
   UI.buildTray();
   UI.buildLabels();
   Draw.init();
@@ -237,6 +240,7 @@ function init() {
 
 function loop(now) {
   update(now);
+  Npcs.update(now); // keep strolling during popups; freeze on the win screen
   Draw.render(now);
   Debug.updatePanel();
   requestAnimationFrame(loop);
