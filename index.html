@@ -56,6 +56,25 @@
     </div>
   </div>
 
+  <!-- battle screen: the Pokémon-style random encounter (run by js/battle.js) -->
+  <div id="battle" hidden>
+    <div id="battle-enemy-box" class="battle-info">
+      <div class="battle-name-row"><span id="battle-enemy-name"></span><span id="battle-enemy-level"></span></div>
+      <div class="battle-hp-row"><span class="battle-hp-label">HP:</span><div class="battle-hp-bar"><div class="battle-hp-fill"></div></div></div>
+    </div>
+    <div id="battle-enemy"></div>
+
+    <div id="battle-player-box" class="battle-info">
+      <div class="battle-name-row"><span id="battle-player-name"></span><span id="battle-player-level"></span></div>
+      <div class="battle-hp-row"><span class="battle-hp-label">HP:</span><div class="battle-hp-bar"><div class="battle-hp-fill"></div></div></div>
+      <div id="battle-player-hpnum"></div>
+    </div>
+    <div id="battle-player"></div>
+
+    <div id="battle-textbox"><span id="battle-text"></span><span id="battle-arrow" hidden>▼</span></div>
+  </div>
+  <div id="battle-flash" hidden></div>
+
   <div id="win" hidden>
     <div id="win-badges"></div>
     <div id="win-text">
@@ -69,14 +88,21 @@
 
   <!-- load order matters: data first, then UI/drawing, game.js last (it boots everything).
        Debugging tip: wrong tent info → tents.js · walked through a wall → map.js
-       · looks wrong → draw.js · behaves wrong → game.js · crowd wrong → npcs.js -->
+       · looks wrong → draw.js · behaves wrong → game.js · crowd wrong → npcs.js
+       Adding an encounter? Copy a file in js/encounters/ and add its tag below. -->
   <script src="js/config.js"></script>
   <script src="js/tents.js"></script>
   <script src="js/map.js"></script>
   <script src="js/npcs.js"></script>
   <script src="js/encounters.js"></script>
+  <script src="js/encounters/masskrug-vendor.js"></script>
+  <script src="js/encounters/lebkuchenherz.js"></script>
+  <script src="js/encounters/lost-tourist.js"></script>
+  <script src="js/encounters/oompah-band.js"></script>
+  <script src="js/encounters/ice.js"></script>
   <script src="js/challenges.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/battle.js"></script>
   <script src="js/draw.js"></script>
   <script src="js/debug.js"></script>
   <script src="js/game.js"></script>

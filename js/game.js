@@ -3,10 +3,11 @@
 // If the game BEHAVES wrong, the fix is in this file.
 //
 // The whole game is one `state` object (inspect it in the console via `game.state`)
-// and one mode string:  'walk' → 'modal' (a popup is open) → 'walk' → ... → 'win'.
+// and one mode string: 'walk' → 'modal' (a popup) or 'battle' (an encounter's
+// battle screen, js/battle.js) → 'walk' → ... → 'win'.
 
 const state = {
-  mode: 'walk',            // 'walk' | 'modal' | 'win'
+  mode: 'walk',            // 'walk' | 'modal' | 'battle' | 'win'
   badges: new Set(),       // ids of collected tents, e.g. 'hofbraeu'
   stepsSinceEncounter: 0,  // steps walked since the last random encounter
   lastRoll: null,          // the most recent encounter dice roll (shown in debug panel)
@@ -56,6 +57,10 @@ window.addEventListener('keydown', function (e) {
 
   if (state.mode === 'modal') {
     if (confirmKey) UI.confirmModal();
+    return;
+  }
+  if (state.mode === 'battle') {
+    if (confirmKey) Battle.advance(); // battle.js: finish the line, or show the next one
     return;
   }
   if (state.mode === 'win') {
@@ -187,7 +192,14 @@ const game = {
     p.moving = false;
   },
 
-  encounterNow: function () { startEncounter(ENCOUNTERS[Math.floor(Math.random() * ENCOUNTERS.length)]); },
+  // random by default, or pick one: game.encounterNow('oompah-band')
+  encounterNow: function (id) {
+    const enc = id
+      ? ENCOUNTERS.find(function (e) { return e.id === id; })
+      : ENCOUNTERS[Math.floor(Math.random() * ENCOUNTERS.length)];
+    if (!enc) { logEvent('No encounter with id "' + id + '". Ids: ' + ENCOUNTERS.map(function (e) { return e.id; }).join(', ')); return; }
+    startEncounter(enc);
+  },
 
   reset: function () {
     state.badges.clear();

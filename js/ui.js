@@ -166,6 +166,7 @@ const UI = {
     document.getElementById('modal').hidden = true;
     document.getElementById('win').hidden = true;
     UI.onConfirm = null;
+    Battle.cancel(); // a battle screen mid-animation counts as an overlay too
   },
 
   // ---- tiny WebAudio jingle (no audio files) -----------------------------------

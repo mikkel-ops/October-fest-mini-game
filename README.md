@@ -54,13 +54,24 @@ The console always has helpers, e.g. `game.give('hofbraeu')`, `game.teleport(21,
 | Behaves wrong (movement, input, badges, win) | `js/game.js` |
 | Popups, badge tray, win screen, sounds | `js/ui.js` |
 | **Add a real challenge for a tent** | `js/challenges.js` (registry — see comment there) |
-| **Add a random encounter** | `js/encounters.js` (same idea) |
+| **Add / edit a random encounter** | `js/encounters/` (one file each — see the README there) |
+| Encounter dice roll & kickoff | `js/encounters.js` |
+| The battle screen (flash, sprites, text box) | `js/battle.js` + the battle section of `style.css` |
 | Debug overlay & hotkeys | `js/debug.js` |
 
 Everything is plain `<script>` tags sharing globals — deliberately no ES modules
 and no `fetch()`, so the double-click `file://` launch keeps working.
 
+## Random encounters
+
+While walking, there's a small chance per step of a wild encounter — complete
+with the Game Boy grass-flash, a battle screen (you in Lederhosen lower-left,
+the encounter upper-right) and a typewriter text box. Try one from the console:
+`game.encounterNow('ice')`. Everything that can appear lives in
+`js/encounters/`, one file per encounter — adding your own is a 5-minute job,
+see the README in that folder.
+
 ## Still to come
 
 - Real challenges inside each tent (the `CHALLENGES` registry is the plug-in point)
-- Real random-encounter mini-games (the `ENCOUNTERS` array likewise)
+- Encounters that fight back (give an entry a `run()` — see `js/encounters/README.md`)
