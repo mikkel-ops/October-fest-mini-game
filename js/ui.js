@@ -5,6 +5,7 @@
 const UI = {
 
   onConfirm: null,  // callback armed by showModal, fired by confirmModal (Enter key)
+  onQuizPick: null, // callback armed by showQuizQuestion, fired by pickQuizChoice
   modalShownAt: 0,  // when the modal opened — briefly blocks Enter so popups can't be spam-skipped
 
   // ---- badge discs -----------------------------------------------------------
@@ -58,13 +59,14 @@ const UI = {
       const owned = state.badges.has(tent.id);
       const wasOwned = slot.classList.contains('owned');
       slot.classList.toggle('owned', owned);
+      slot.classList.toggle('closed', !tentIsOpen(tent));
       if (owned !== wasOwned) {
         slot.innerHTML = '';
         slot.appendChild(UI.makeDisc(tent, !owned));
         slot.classList.toggle('pop', owned); // pop animation on newly won badges (and not on reset)
       }
     });
-    document.getElementById('counter').textContent = state.badges.size + ' / ' + TENTS.length;
+    document.getElementById('counter').textContent = openBadgeCount() + ' / ' + openTents().length;
   },
 
   // ---- tent number labels over the map ---------------------------------------
@@ -76,10 +78,15 @@ const UI = {
     TENTS.forEach(function (tent) {
       const b = TENT_BOUNDS[tent.id];
       const chip = document.createElement('div');
-      chip.className = 'tent-chip';
+      chip.className = 'tent-chip' + (tentIsOpen(tent) ? '' : ' closed');
       chip.textContent = tent.num;
-      chip.style.background = tent.colors[0];
-      chip.style.color = tent.colors[1];
+      if (tentIsOpen(tent)) {
+        chip.style.background = tent.colors[0];
+        chip.style.color = tent.colors[1];
+      } else {
+        chip.style.background = CONFIG.COLORS.tentClosed;
+        chip.style.color = '#e8e4dc';
+      }
       chip.style.left = ((b.minX + b.maxX + 1) / 2 / MAP_W * 100) + '%';
       chip.style.top = ((b.minY + b.maxY + 1) / 2 / MAP_H * 100) + '%';
       layer.appendChild(chip);
@@ -93,7 +100,9 @@ const UI = {
     const box = document.getElementById('modal-box');
     document.getElementById('modal-title').textContent = opts.title || '';
     document.getElementById('modal-body').innerHTML = opts.body || '';
-    document.getElementById('modal-confirm').textContent = opts.confirmText || 'OK [Enter]';
+    const confirm = document.getElementById('modal-confirm');
+    confirm.hidden = false;
+    confirm.textContent = opts.confirmText || 'OK [Enter]';
     box.style.setProperty('--accent', (opts.colors && opts.colors[0]) || '#5b3a1e');
     box.style.setProperty('--accent-text', (opts.colors && opts.colors[1]) || '#ffffff');
     const holder = document.getElementById('modal-disc');
@@ -101,16 +110,53 @@ const UI = {
     if (opts.disc) holder.appendChild(opts.disc);
     modal.hidden = false;
     UI.onConfirm = opts.onConfirm || null;
+    UI.onQuizPick = null;
     UI.modalShownAt = performance.now();
   },
 
   // Fired by game.js when Enter/Space is pressed while a modal is open.
   confirmModal: function () {
+    if (UI.onQuizPick) return; // a quiz question is waiting for 1/2/3, not Enter
     if (performance.now() - UI.modalShownAt < 250) return; // ignore Enter-mashing carried over from the previous popup
     document.getElementById('modal').hidden = true;
     const cb = UI.onConfirm;
     UI.onConfirm = null;
     if (cb) cb();
+  },
+
+  // Multiple-choice question: big TV buttons + keys 1/2/3 (wired in game.js).
+  showQuizQuestion: function (opts) {
+    UI.showModal({
+      title: opts.title,
+      body: opts.body || '',
+      colors: opts.colors,
+      confirmText: '',
+      onConfirm: null,
+    });
+    document.getElementById('modal-confirm').hidden = true;
+    const body = document.getElementById('modal-body');
+    const list = document.createElement('div');
+    list.className = 'quiz-choices';
+    (opts.choices || []).forEach(function (label, i) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'quiz-choice';
+      btn.textContent = (i + 1) + '. ' + label;
+      btn.addEventListener('click', function () { UI.pickQuizChoice(i); });
+      list.appendChild(btn);
+    });
+    body.appendChild(list);
+    UI.onQuizPick = opts.onPick || null;
+  },
+
+  pickQuizChoice: function (index) {
+    if (!UI.onQuizPick) return;
+    if (performance.now() - UI.modalShownAt < 250) return;
+    const cb = UI.onQuizPick;
+    UI.onQuizPick = null;
+    document.getElementById('modal').hidden = true;
+    document.getElementById('modal-confirm').hidden = false;
+    cb(index);
   },
 
   // ---- badge-get fanfare ------------------------------------------------------
@@ -145,11 +191,12 @@ const UI = {
   // ---- win screen --------------------------------------------------------------
 
   showWin: function () {
+    const open = openTents();
     const ring = document.getElementById('win-badges');
     ring.innerHTML = '';
-    TENTS.forEach(function (tent, i) {
+    open.forEach(function (tent, i) {
       const disc = UI.makeDisc(tent, false);
-      const angle = (i / TENTS.length) * 2 * Math.PI - Math.PI / 2;
+      const angle = (i / open.length) * 2 * Math.PI - Math.PI / 2;
       disc.style.position = 'absolute';
       disc.style.left = (50 + 44 * Math.cos(angle)) + '%';
       disc.style.top = (50 + 40 * Math.sin(angle)) + '%';
@@ -157,6 +204,10 @@ const UI = {
       disc.classList.add('win-disc');
       ring.appendChild(disc);
     });
+    const blurb = document.getElementById('win-blurb');
+    if (blurb) {
+      blurb.textContent = 'You conquered the ' + open.length + ' open tents of the Wiesn!';
+    }
     document.getElementById('win').hidden = false;
     state.winShownAt = performance.now(); // Enter is ignored for a moment so mashing can't skip the payoff
     UI.playJingle(true);
@@ -165,7 +216,9 @@ const UI = {
   hideOverlays: function () {
     document.getElementById('modal').hidden = true;
     document.getElementById('win').hidden = true;
+    document.getElementById('modal-confirm').hidden = false;
     UI.onConfirm = null;
+    UI.onQuizPick = null;
     Battle.cancel(); // a battle screen mid-animation counts as an overlay too
   },
 

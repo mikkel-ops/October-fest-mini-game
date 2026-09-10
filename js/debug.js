@@ -78,7 +78,7 @@ const Debug = {
     Debug.panel.textContent = [
       'mode: ' + state.mode,
       'player tile: (' + p.tx + ',' + p.ty + ')  char: "' + ch + '" (' + (LEGEND[ch] ? LEGEND[ch].name : '?') + ')',
-      'badges: ' + state.badges.size + ' / ' + TENTS.length,
+      'badges: ' + openBadgeCount() + ' / ' + openTents().length + '  (open tents)',
       'steps since encounter: ' + state.stepsSinceEncounter + ' (cooldown ' + CONFIG.ENCOUNTER_COOLDOWN + ')',
       'last encounter roll: ' + (state.lastRoll === null ? '—' : state.lastRoll.toFixed(3)) + ' vs ' + CONFIG.ENCOUNTER_CHANCE,
       'npcs: ' + state.npcs.map(function (n) { return n.kind.name + '(' + n.tx + ',' + n.ty + ')'; }).join(' '),

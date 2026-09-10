@@ -29,6 +29,7 @@ const CONFIG = {
     ride:       '#e76f51',
     rideAccent: '#ffd166',
     tentWall:   '#f3ead8',  // base canvas color of tent roofs (stripes use tent colors)
+    tentClosed: '#8a8580',  // grey stripes/awnings for tents with no challenge yet
     door:       '#4a3223',  // the dark tent doorway opening
   },
 
