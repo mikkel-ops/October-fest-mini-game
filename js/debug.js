@@ -40,7 +40,12 @@ const Debug = {
     if (teleportKeys[code]) { Debug.teleportToTent(teleportKeys[code]); return true; }
     if (code === 'KeyB') { Debug.giveNextBadge(); return true; }
     if (code === 'KeyN') { game.winNow(); return true; }
-    if (code === 'KeyE') { startEncounter(ENCOUNTERS[Math.floor(Math.random() * ENCOUNTERS.length)]); return true; }
+    if (code === 'KeyE') {
+      const pool = availableEncounters();
+      if (pool.length === 0) { logEvent('No encounters left this session. R to reset.'); return true; }
+      startEncounter(pool[Math.floor(Math.random() * pool.length)]);
+      return true;
+    }
     if (code === 'KeyR') { game.reset(); return true; }
     return false;
   },
@@ -81,6 +86,11 @@ const Debug = {
       'badges: ' + state.badges.size + ' / ' + TENTS.length,
       'steps since encounter: ' + state.stepsSinceEncounter + ' (cooldown ' + CONFIG.ENCOUNTER_COOLDOWN + ')',
       'last encounter roll: ' + (state.lastRoll === null ? '—' : state.lastRoll.toFixed(3)) + ' vs ' + CONFIG.ENCOUNTER_CHANCE,
+      'encounters left: ' + ENCOUNTERS.map(function (e) {
+        const used = state.encounterCounts[e.id] || 0;
+        const max = e.maxAppearances == null ? '∞' : e.maxAppearances;
+        return e.id + ' ' + used + '/' + max;
+      }).join(', '),
       'npcs: ' + state.npcs.map(function (n) { return n.kind.name + '(' + n.tx + ',' + n.ty + ')'; }).join(' '),
       '',
       'teleport: 1-9 0 - = [ ]   B badge   N all',

@@ -270,6 +270,15 @@ body {
 
 .battle-sprite { image-rendering: pixelated; display: block; }
 
+/* friend photos on the battle screen — keep them sharp, not pixelated */
+.battle-photo {
+  display: block;
+  height: 38vmin;
+  width: auto;
+  max-width: 42vmin;
+  object-fit: contain;
+}
+
 /* the encounter upper-right, you lower-left — sliding in from opposite sides */
 #battle-enemy {
   position: absolute;

@@ -94,7 +94,17 @@ const Battle = {
   buildScene: function (enc) {
     const enemy = document.getElementById('battle-enemy');
     enemy.innerHTML = '';
-    enemy.appendChild(Battle.spriteCanvas(enc.art, enc.palette, 1.6));
+    // Photo encounters (friends, ICE) set enc.image; anyone else can still use ASCII art.
+    if (enc.image) {
+      const img = document.createElement('img');
+      img.className = 'battle-photo';
+      img.src = enc.image;
+      img.alt = enc.name;
+      img.draggable = false;
+      enemy.appendChild(img);
+    } else {
+      enemy.appendChild(Battle.spriteCanvas(enc.art, enc.palette, 1.6));
+    }
 
     const player = document.getElementById('battle-player');
     player.innerHTML = '';
@@ -170,7 +180,7 @@ const Battle = {
     if (Battle.lines.length > 0) { Battle.nextLine(); return; }
     const done = Battle.onDone;
     Battle.cancel();
-    if (done) done(); // encounters.js sets state.mode back to 'walk'
+    if (done) done(); // encounters.js: IRL mini-game modal, or back to walking
   },
 
   // stop everything and hide the battle screen (also used by game.reset)
