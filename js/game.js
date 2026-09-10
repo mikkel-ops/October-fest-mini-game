@@ -10,6 +10,7 @@ const state = {
   mode: 'walk',            // 'walk' | 'modal' | 'battle' | 'win'
   badges: new Set(),       // ids of collected tents, e.g. 'hofbraeu'
   stepsSinceEncounter: 0,  // steps walked since the last random encounter
+  encounterCounts: {},     // how many times each encounter id has appeared this session
   lastRoll: null,          // the most recent encounter dice roll (shown in debug panel)
   winShownAt: 0,           // when the win screen appeared (guards against accidental instant reset)
   debug: CONFIG.DEBUG,
@@ -206,7 +207,8 @@ const game = {
     p.moving = false;
   },
 
-  // random by default, or pick one: game.encounterNow('oompah-band')
+  // random by default, or pick one: game.encounterNow('soeren')
+  // Bypasses the once/three-times pool so you can re-test a friend or ICE.
   encounterNow: function (id) {
     const enc = id
       ? ENCOUNTERS.find(function (e) { return e.id === id; })
@@ -218,6 +220,7 @@ const game = {
   reset: function () {
     state.badges.clear();
     state.stepsSinceEncounter = 0;
+    state.encounterCounts = {};
     state.lastRoll = null;
     state.mode = 'walk';
     game.teleport(CONFIG.START_TX, CONFIG.START_TY);
