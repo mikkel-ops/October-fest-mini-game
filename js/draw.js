@@ -73,11 +73,12 @@ const Draw = {
 
         } else if (ch === 't') {
           // tent roof: canvas-white with stripes in the tent's brand color
+          // (grey stripes if that tent has no challenge yet)
           const tent = TENT_TILES[x + ',' + y];
           ctx.fillStyle = C.tentWall;
           ctx.fillRect(px, py, TILE, TILE);
           if (tent && x % 2 === 0) {
-            ctx.fillStyle = tent.colors[0];
+            ctx.fillStyle = tentIsOpen(tent) ? tent.colors[0] : C.tentClosed;
             ctx.fillRect(px, py, TILE, TILE);
           }
 
@@ -86,7 +87,7 @@ const Draw = {
           const tent = LEGEND[ch].tent;
           ctx.fillStyle = C.door;
           ctx.fillRect(px, py, TILE, TILE);
-          ctx.fillStyle = tent.colors[0];
+          ctx.fillStyle = tentIsOpen(tent) ? tent.colors[0] : C.tentClosed;
           ctx.fillRect(px, py, TILE, 4);
           ctx.fillStyle = C.tentWall;
           ctx.fillRect(px + 1, py + 4, 2, 3); // two tiny awning tassels

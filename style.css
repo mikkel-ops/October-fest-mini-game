@@ -50,6 +50,10 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   pointer-events: none;
 }
+.tent-chip.closed {
+  border-color: rgba(255, 255, 255, 0.35);
+  opacity: 0.8;
+}
 
 /* ---- badge tray --------------------------------------------------------------- */
 
@@ -71,6 +75,8 @@ body {
 #tray { display: flex; gap: 0.8vmin; }
 
 .slot { position: relative; }
+.slot.closed { opacity: 0.4; }
+.slot.closed.owned { opacity: 1; }
 
 .disc {
   position: relative;
@@ -238,6 +244,31 @@ body {
   border-radius: 2em;
   font-size: clamp(14px, 2.4vmin, 30px);
   font-weight: 800;
+}
+#modal-confirm[hidden] { display: none !important; }
+
+.quiz-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vmin;
+  margin-top: 2vmin;
+}
+.quiz-choice {
+  font: inherit;
+  font-weight: 800;
+  font-size: clamp(14px, 2.2vmin, 28px);
+  padding: 1.2vmin 2vmin;
+  border: 3px solid var(--accent);
+  border-radius: 0.6em;
+  background: #fff8e7;
+  color: #2b2b2b;
+  cursor: pointer;
+}
+.quiz-choice:hover,
+.quiz-choice:focus {
+  background: var(--accent);
+  color: var(--accent-text);
+  outline: none;
 }
 
 /* ---- battle screen (random encounters — the flow lives in js/battle.js) ------------ */

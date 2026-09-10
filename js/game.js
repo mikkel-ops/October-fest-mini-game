@@ -47,9 +47,9 @@ let turnLockUntil = 0;    // until this timestamp, a held key only turns the pla
 window.addEventListener('keydown', function (e) {
   const dir = KEYMAP[e.code];
   const confirmKey = e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Space';
-  if (dir || confirmKey) e.preventDefault(); // no page scrolling
+  const quizPick = quizChoiceFromKey(e.code);
+  if (dir || confirmKey || (state.mode === 'modal' && quizPick >= 0)) e.preventDefault(); // no page scrolling
 
-  if (dir && !held.includes(dir)) held.push(dir);
   if (e.repeat) return; // everything below reacts to the initial press only
 
   if (e.code === 'Backquote') { Debug.toggle(); return; }
@@ -57,6 +57,7 @@ window.addEventListener('keydown', function (e) {
 
   if (state.mode === 'modal') {
     if (confirmKey) UI.confirmModal();
+    else if (quizPick >= 0) UI.pickQuizChoice(quizPick);
     return;
   }
   if (state.mode === 'battle') {
@@ -70,6 +71,7 @@ window.addEventListener('keydown', function (e) {
     return;
   }
   // walk mode: debug hotkeys (teleports etc.) only when debug is on
+  if (dir && !held.includes(dir)) held.push(dir);
   if (state.debug) Debug.handleKey(e.code);
 });
 
@@ -138,6 +140,8 @@ function onStepComplete() {
   if (tent) {
     if (state.badges.has(tent.id)) {
       UI.toast('Schon erobert! You already have the ' + tent.brewery + ' badge.');
+    } else if (!tentIsOpen(tent)) {
+      UI.toast('Noch zu! This tent\'s challenge isn\'t tapped yet.');
     } else {
       startChallenge(tent); // challenges.js — calls awardBadge(tent) on success
     }
@@ -152,18 +156,28 @@ function onStepComplete() {
 function awardBadge(tent) {
   state.badges.add(tent.id);
   UI.refreshTray();
-  logEvent('Badge ' + state.badges.size + '/' + TENTS.length + ': ' + tent.brewery + ' (' + tent.name + ')');
+  logEvent('Badge ' + openBadgeCount() + '/' + openTents().length + ': ' + tent.brewery + ' (' + tent.name + ')');
   UI.showFanfare(tent, function () {
     if (!checkWin()) state.mode = 'walk';
   });
 }
 
 function checkWin() {
-  if (state.badges.size < TENTS.length) return false;
+  const need = openTents().length;
+  if (need === 0 || openBadgeCount() < need) return false;
   state.mode = 'win';
-  logEvent("O'zapft is! All " + TENTS.length + ' badges collected — you conquered the Wiesn!');
+  logEvent("O'zapft is! All " + need + ' open badges collected — you conquered the Wiesn!');
   UI.showWin();
   return true;
+}
+
+// 1/2/3 (and A/B/C) pick a quiz answer. Only consulted while a modal is open,
+// so Digit3 never teleports during a quiz — debug teleports stay walk-only.
+function quizChoiceFromKey(code) {
+  if (code === 'Digit1' || code === 'Numpad1' || code === 'KeyA') return 0;
+  if (code === 'Digit2' || code === 'Numpad2' || code === 'KeyB') return 1;
+  if (code === 'Digit3' || code === 'Numpad3' || code === 'KeyC') return 2;
+  return -1;
 }
 
 // ---- console helpers -----------------------------------------------------------------
@@ -246,7 +260,7 @@ function init() {
   document.addEventListener('visibilitychange', function () { if (document.hidden) held.length = 0; });
   window.addEventListener('focus', function () { setTimeout(function () { hint.classList.add('faded'); }, 2500); });
 
-  logEvent("O'zapft is! Visit all " + TENTS.length + ' tents. Walk with arrows/WASD, F = fullscreen' + (state.debug ? ', debug ON' : ', ?debug=1 for debug mode') + '.');
+  logEvent("O'zapft is! Visit the " + openTents().length + ' open tents. Walk with arrows/WASD, F = fullscreen' + (state.debug ? ', debug ON' : ', ?debug=1 for debug mode') + '.');
   requestAnimationFrame(loop);
 }
 
