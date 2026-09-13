@@ -18,6 +18,8 @@ const CONFIG = {
   NPC_PAUSE_MIN: 400,  // idle time after a step / blocked path (ms)
   NPC_PAUSE_MAX: 2400,
 
+  FERRIS_SPIN_MS: 8000, // one full turn of the Riesenrad — slow, festive, not a blur
+
   // world colors
   COLORS: {
     grass:      '#79b74a',
@@ -28,6 +30,12 @@ const CONFIG = {
     treeLeaf:   '#2e7d32',
     ride:       '#e76f51',
     rideAccent: '#ffd166',
+    ferrisRim:     '#c41e3a', // Wiesn red hoop
+    ferrisSpoke:   '#c9a227', // gold spokes + gondola roofs
+    ferrisHub:     '#ffd166',
+    ferrisGondolaA:'#1a3a6b', // Bavarian blue / white cars
+    ferrisGondolaB:'#f8f8ff',
+    ferrisLeg:     '#5b3a1e', // timber A-frame
     tentWall:   '#f3ead8',  // base canvas color of tent roofs (stripes use tent colors)
     tentClosed: '#8a8580',  // grey stripes/awnings for tents with no challenge yet
     door:       '#4a3223',  // the dark tent doorway opening

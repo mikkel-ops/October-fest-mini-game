@@ -236,6 +236,7 @@ window.game = game;
 // ---- boot ------------------------------------------------------------------------------
 
 function init() {
+  computeFerrisBounds();
   const problems = validateMap();
   if (problems.length > 0) {
     const banner = document.getElementById('boot-errors');
