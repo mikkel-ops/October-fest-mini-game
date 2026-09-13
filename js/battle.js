@@ -6,7 +6,8 @@
 // types the story letter by letter → Enter advances → back to walking.
 // No combat — it's an Oktoberfest, not a gym.
 //
-// Started by startEncounter() in encounters.js. While state.mode === 'battle',
+// Started by startEncounter() or a tent's booked host (CHALLENGES.<id>.host).
+// While state.mode === 'battle',
 // game.js routes Enter/Space here (Battle.advance). WHO can appear lives in
 // js/encounters/ — one file per encounter, see the README there.
 

@@ -3,6 +3,7 @@
 // THE SEAM FOR REAL CHALLENGES: register one entry per tent id, e.g.
 //
 //   CHALLENGES.hofbraeu = {
+//     host: { name, level, appear, text, art, palette }, // optional battle intro
 //     run: function (tent, done) {
 //       // ... your mini-game, any UI you like ...
 //       done(true);   // true = badge earned, false = try again later
@@ -12,6 +13,10 @@
 // A tent is OPEN only if it has its own key here. DEFAULT does not count —
 // closed tents stay grey on the map and toast instead of awarding a badge.
 // When you add a new CHALLENGES.<id>, that tent lights up automatically.
+//
+// host (optional) uses the same battle screen as street encounters, but it is
+// booked: this tent always summons this guest. Do NOT push hosts into
+// ENCOUNTERS — they must not roll on the grass.
 
 const CHALLENGES = {
   DEFAULT: {
@@ -45,6 +50,7 @@ function openBadgeCount() {
 
 // Shared 3-question flow. Always finishes with done(true) — the quiz is a
 // show for the TV, not a gate. Badge + fanfare still come from startChallenge.
+// spec.skipIntro: the battle host already said the hook — jump to question 1.
 function runQuiz(tent, spec, done) {
   const questions = spec.questions;
   let i = 0;
@@ -95,14 +101,60 @@ function runQuiz(tent, spec, done) {
     });
   }
 
-  showIntro();
+  if (spec.skipIntro) showQuestion();
+  else showIntro();
 }
 
-// Hofbräu stays Hofbräu — Mr. Worldwide just crashed the rowdiest tent.
+// Hofbräu stays Hofbräu — Mr. Worldwide is booked, every time you walk in.
 CHALLENGES.hofbraeu = {
+  host: {
+    name: 'PITBULL',
+    level: 305, // Miami
+    appear: 'A wild MR. WORLDWIDE appeared!',
+    text: 'Dale! He sat down on the Hofbräu benches. Three questions, then a Maß.',
+    // Chunky pixel Pitbull in Tracht + a Maß. Sunglasses and the goatee do the
+    // recognition; Lederhosen and the mug are the Wiesn joke.
+    palette: {
+      N: '#c68642', // skin
+      n: '#8d5524', // ear / shadow
+      k: '#1a120c', // goatee
+      g: '#111111', // wraparound shades
+      G: '#f4d03f', // gold chain
+      w: '#f4efe4', // shirt
+      r: '#c41e3a', // Hofbräu-red suspenders
+      L: '#6b4423', // lederhosen
+      D: '#3d2817', // leder dark
+      E: '#1a1a1a', // shoes
+      C: '#f3ead8', // Maß ceramic
+      m: '#fff8e7', // foam
+      B: '#e8a317', // beer
+      H: '#d4c4a0', // mug handle
+    },
+    art: [
+      '.....NNNNNNNN.....',
+      '....NNNNNNNNNN....',
+      '...nNNggggggNNn...',
+      '...NNNggggggNNN...',
+      '...NNNggggggNNN...',
+      '....NNNNNNNNNN....',
+      '.....NNkkkkNN.....',
+      '......NNkkNN......',
+      '.....GGGGGGGG.....',
+      '....GwwwwwwwwG....',
+      '...wwwwwwwwwwww.CC',
+      '..NwwwwwwwwwwwNCCm',
+      '..NwrrwwwwrrwwNCBB',
+      '...wwrrrrrrrrwwCBB',
+      '....LLLLLLLLLL.CCC',
+      '....LLDDDDDDLL.H.C',
+      '....LLL....LLL.H..',
+      '....EEE....EEE....',
+    ],
+  },
+
   run: function (tent, done) {
     runQuiz(tent, {
-      hook: 'A shout cuts through the 10,000 seats — <b>Mr. Worldwide</b> just sat down. Three questions, then a Maß.',
+      skipIntro: true, // the battle lines already introduced him
       wrap: function (score, total) {
         if (score === total) return 'Dale! ' + score + '/' + total + ' — Mr. Worldwide buys the next Maß.';
         if (score === 0) return '0/' + total + ' — Hofbräu still pours you a Maß. The badge is yours anyway.';
@@ -128,7 +180,7 @@ CHALLENGES.hofbraeu = {
           choices: ['Mr. Worldwide', 'Mr. Wiesn', 'Mr. Maß'],
           answer: 0,
           right: 'Mr. Worldwide! Tonight he\'s just another guest in Hofbräu.',
-          wrong: 'Mr. Worldwide — not Mr. Wiesn, though he\'d look good in Lederhosen.',
+          wrong: 'Mr. Worldwide — not Mr. Wiesn. The Lederhosen already look good on him.',
         },
       ],
     }, done);
@@ -178,14 +230,27 @@ function startChallenge(tent) {
     UI.toast('Noch zu! This tent\'s challenge isn\'t tapped yet.');
     return;
   }
-  state.mode = 'modal';
+  const challenge = CHALLENGES[tent.id];
   logEvent('Entered ' + tent.name + ' — starting challenge.');
-  CHALLENGES[tent.id].run(tent, function (success) {
-    if (success) {
-      awardBadge(tent); // game.js: adds the badge, fanfare, win check
-    } else {
-      state.mode = 'walk';
-      logEvent('Challenge failed at ' + tent.name + ' — try again.');
-    }
-  });
+
+  const runIt = function () {
+    state.mode = 'modal';
+    challenge.run(tent, function (success) {
+      if (success) {
+        awardBadge(tent); // game.js: adds the badge, fanfare, win check
+      } else {
+        state.mode = 'walk';
+        logEvent('Challenge failed at ' + tent.name + ' — try again.');
+      }
+    });
+  };
+
+  // Booked host: same flash + slide-in as a wild encounter, then the quiz.
+  // Never rolled from the ENCOUNTERS pool — Hofbräu always gets Pitbull.
+  if (challenge.host) {
+    state.mode = 'battle';
+    Battle.start(challenge.host, runIt);
+  } else {
+    runIt();
+  }
 }
