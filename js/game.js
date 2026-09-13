@@ -49,7 +49,7 @@ window.addEventListener('keydown', function (e) {
   const dir = KEYMAP[e.code];
   const confirmKey = e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Space';
   const quizPick = quizChoiceFromKey(e.code);
-  if (dir || confirmKey || (state.mode === 'modal' && quizPick >= 0)) e.preventDefault(); // no page scrolling
+  if (dir || confirmKey || ((state.mode === 'modal' || state.mode === 'battle') && quizPick >= 0)) e.preventDefault(); // no page scrolling
 
   if (e.repeat) return; // everything below reacts to the initial press only
 
@@ -62,7 +62,13 @@ window.addEventListener('keydown', function (e) {
     return;
   }
   if (state.mode === 'battle') {
-    if (confirmKey) Battle.advance(); // battle.js: finish the line, or show the next one
+    if (Battle.phase === 'menu') {
+      if (dir === 'up' || dir === 'down') Battle.moveCursor(dir);
+      else if (confirmKey) Battle.pickMove();
+      else if (quizPick >= 0) Battle.pickMoveAt(quizPick);
+      return;
+    }
+    if (confirmKey) Battle.advance(); // finish the line, show the next, or open the fight menu
     return;
   }
   if (state.mode === 'win') {

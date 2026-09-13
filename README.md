@@ -25,7 +25,8 @@ and open <http://localhost:8000>. For the party: laptop + HDMI + Chrome, press *
 | Key | Action |
 |-----|--------|
 | Arrows / WASD | walk (tap to turn, hold to walk) |
-| Enter / Space | confirm popups |
+| Enter / Space | confirm popups and battle text |
+| ↑ ↓ or 1 / 2 / 3 | pick a FIGHT move on the battle screen |
 | F | fullscreen |
 | ` (backtick) | debug mode |
 
@@ -64,14 +65,24 @@ and no `fetch()`, so the double-click `file://` launch keeps working.
 
 ## Random encounters
 
-While walking, there's a small chance per step of a wild encounter — complete
-with the Game Boy grass-flash, a battle screen (you in Lederhosen lower-left,
-the encounter upper-right) and a typewriter text box. Try one from the console:
-`game.encounterNow('ice')`. Everything that can appear lives in
-`js/encounters/`, one file per encounter — adding your own is a 5-minute job,
-see the README in that folder.
+While walking, there's a small chance per step of a wild encounter — Game Boy
+grass-flash, then a battle screen (you in Lederhosen lower-left, the encounter
+upper-right). Friends appear **once** per session; ICE can show **three** times.
+
+After `A wild X appeared!` they either attack you or you pick from a FIGHT menu:
+
+| Who | What happens |
+|---|---|
+| Mille | `TWO HANDS TO ONE` — she dashes in; that hand makes you take a shot |
+| ICE | `APPEAR` (yes, again) — the bottle pops back in; kneel and chug |
+| Kruse | `RUGBRØDMAD` — the American girl is sent out the door |
+| Toke | pick a wine — Château Margaux is super effective |
+| Søren | pick a Classic CC — SHEEP is the real one |
+| Tejs | pick a sort game — POOL is the basement-board hit |
+
+Try one from the console: `game.encounterNow('mille')`. Everything that can
+appear lives in `js/encounters/`, one file per encounter — see the README there.
 
 ## Still to come
 
-- Real challenges inside each tent (the `CHALLENGES` registry is the plug-in point)
-- Encounters that fight back (give an entry a `run()` — see `js/encounters/README.md`)
+- Real challenges inside more tents (the `CHALLENGES` registry is the plug-in point)

@@ -2,8 +2,8 @@
 // wild-encounter system). This file only rolls the dice and kicks things off.
 //
 // WHO you can meet lives in js/encounters/ — one small file per encounter
-// (sprite or photo, name, text, optional IRL mini-game). To add one: copy a
-// file there, edit it, and add its <script> tag to index.html.
+// (sprite or photo, name, text, optional foeAttack / playerAttacks). To add
+// one: copy a file there, edit it, and add its <script> tag to index.html.
 // See js/encounters/README.md.
 //
 // Tent hosts (Pitbull in Hofbräu, …) are NOT in this pool. They live on
@@ -47,8 +47,9 @@ function startEncounter(enc) {
     logEvent('Encounter over — back to walking.');
   };
 
-  // Battle intro first (photo or pixel art), then the optional IRL mini-game.
-  // enc.run used to skip the battle screen; now it runs after the last line.
+  // The fight (foe move or FIGHT menu) lives on the battle screen now.
+  // enc.run is still here if someone wants a modal after — none of the
+  // friends use it anymore.
   const afterBattle = function () {
     if (enc.run) {
       state.mode = 'modal';

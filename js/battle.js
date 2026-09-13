@@ -1,19 +1,20 @@
 // battle.js — the Pokémon-style battle screen for random encounters.
 //
 // The sequence, straight from the Game Boy: the screen flashes like you stepped
-// into tall grass → the battle screen slides in (you in Lederhosen lower-left,
-// the encounter upper-right, both with info boxes and HP bars) → the text box
-// types the story letter by letter → Enter advances → back to walking.
-// No combat — it's an Oktoberfest, not a gym.
+// into tall grass → the battle screen slides in → the text box types
+// "A wild X appeared!" → then either the foe uses their signature move, or
+// you pick from a FIGHT menu of three attacks → "NAME used MOVE!" → Enter
+// returns to walking.
 //
 // Started by startEncounter() or a tent's booked host (CHALLENGES.<id>.host).
-// While state.mode === 'battle',
-// game.js routes Enter/Space here (Battle.advance). WHO can appear lives in
-// js/encounters/ — one file per encounter, see the README there.
+// While state.mode === 'battle', game.js routes keys here (Battle.advance /
+// the FIGHT menu). Street encounters live in js/encounters/; tent hosts live
+// on CHALLENGES.<id>.host.
 
 const Battle = {
 
-  phase: 'idle',   // 'flash' | 'slide' | 'text' — decides what Enter does
+  phase: 'idle',   // 'flash' | 'slide' | 'text' | 'menu'
+  enc: null,       // the encounter currently on screen
   lines: [],       // text lines still to be shown
   chars: [],       // the current line, split into characters (emoji-safe)
   shown: 0,        // how many of those characters are on screen
@@ -21,6 +22,8 @@ const Battle = {
   lineShownAt: 0,  // when the current line started (swallows accidental double-Enter)
   onDone: null,    // hands control back to encounters.js
   timers: [],      // all pending timeouts, so cancel() can clear them mid-animation
+  cursor: 0,       // selected row in the FIGHT menu
+  fought: false,   // true once an attack has been used (so we don't reopen the menu)
 
   // ---- the hero, seen from behind --------------------------------------------
   // Same lad as draw.js, but big: ASCII pixel art, one character = one pixel,
@@ -62,6 +65,10 @@ const Battle = {
   start: function (enc, done) {
     Battle.cancel(); // clear any leftovers from an aborted battle
     Battle.onDone = done;
+    Battle.enc = enc;
+    Battle.fought = false;
+    Battle.cursor = 0;
+    // appear (+ optional roast). The attack / menu comes after the last line.
     Battle.lines = [enc.appear, enc.text].filter(Boolean);
     Battle.buildScene(enc);
 
@@ -119,9 +126,21 @@ const Battle = {
     document.getElementById('battle-player-name').textContent = 'WIESNHELD';
     document.getElementById('battle-player-level').textContent = ':L' + playerLevel;
     document.getElementById('battle-player-hpnum').textContent = hp + '/' + hp;
+    Battle.setHp('enemy', 100);
+    Battle.setHp('player', 100);
 
     document.getElementById('battle-text').textContent = '';
     document.getElementById('battle-arrow').hidden = true;
+    Battle.hideMenu();
+  },
+
+  // Cosmetic HP bar — green / gold / red like the Game Boy. Pure flavor.
+  setHp: function (who, pct) {
+    const box = who === 'player' ? 'battle-player-box' : 'battle-enemy-box';
+    const fill = document.querySelector('#' + box + ' .battle-hp-fill');
+    if (!fill) return;
+    fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+    fill.style.background = pct <= 25 ? '#c41e3a' : pct <= 50 ? '#e6b800' : '#2e7d32';
   },
 
   // ASCII art -> tiny canvas (1 pixel per character), upscaled crisply by CSS.
@@ -166,10 +185,132 @@ const Battle = {
     }, 30);
   },
 
+  // After the appear/roast lines: foe uses their move, or you get a FIGHT menu.
+  afterIntro: function () {
+    const enc = Battle.enc;
+    if (!enc || Battle.fought) { Battle.finish(); return; }
+    if (enc.playerAttacks && enc.playerAttacks.length) {
+      Battle.showMenu();
+      return;
+    }
+    if (enc.foeAttack) {
+      Battle.useMove(enc.foeAttack, enc.name);
+      return;
+    }
+    Battle.finish();
+  },
+
+  // Build "NAME used MOVE!" + optional effectiveness + the drink punchline.
+  useMove: function (move, userName) {
+    Battle.fought = true;
+    Battle.hideMenu();
+    Battle.lines = [userName + ' used ' + move.name + '!'];
+    if (move.effective === true) Battle.lines.push("It's super effective!");
+    if (move.effective === false) Battle.lines.push("It's not very effective…");
+    if (move.result) Battle.lines.push(move.result);
+
+    // HP is fake — just sells the hit. Foe attacks chip you; a good pick chips them.
+    if (userName !== 'WIESNHELD') {
+      Battle.setHp('player', 20);
+      if (move.anim === 'appear') Battle.playAppear(); // ICE: it appears. Again.
+      else Battle.playDash(); // Mille (and other foe moves) lunge at you
+    } else if (move.effective === true) {
+      Battle.setHp('enemy', 15);
+    } else {
+      Battle.setHp('player', 45);
+    }
+
+    Battle.phase = 'text';
+    Battle.nextLine();
+  },
+
+  // Restart the dash/hit CSS animations (same class-toggle trick as the toast).
+  playDash: function () {
+    const foe = document.getElementById('battle-enemy');
+    const hero = document.getElementById('battle-player');
+    foe.classList.remove('dashing');
+    hero.classList.remove('hit');
+    void foe.offsetWidth;
+    foe.classList.add('dashing');
+    Battle.after(180, function () {
+      hero.classList.remove('hit');
+      void hero.offsetWidth;
+      hero.classList.add('hit');
+    });
+  },
+
+  // ICE's joke move: vanish and pop back in as if it just appeared.
+  playAppear: function () {
+    const foe = document.getElementById('battle-enemy');
+    const hero = document.getElementById('battle-player');
+    foe.classList.remove('appearing', 'dashing');
+    hero.classList.remove('hit');
+    void foe.offsetWidth;
+    foe.classList.add('appearing');
+    Battle.after(550, function () {
+      hero.classList.remove('hit');
+      void hero.offsetWidth;
+      hero.classList.add('hit');
+    });
+  },
+
+  // ---- FIGHT menu (three named attacks, arrows or 1/2/3) ----------------------
+
+  showMenu: function () {
+    const enc = Battle.enc;
+    const list = document.getElementById('battle-menu-list');
+    list.innerHTML = '';
+    enc.playerAttacks.forEach(function (move, i) {
+      const row = document.createElement('div');
+      row.className = 'battle-move';
+      row.textContent = (i + 1) + '. ' + move.name;
+      list.appendChild(row);
+    });
+    document.getElementById('battle-menu-prompt').textContent =
+      enc.fightPrompt || 'What will WIESNHELD do?';
+    document.getElementById('battle').classList.add('menu');
+    document.getElementById('battle-menu').hidden = false;
+    Battle.phase = 'menu';
+    Battle.cursor = 0;
+    Battle.refreshCursor();
+  },
+
+  hideMenu: function () {
+    const battle = document.getElementById('battle');
+    if (battle) battle.classList.remove('menu');
+    const menu = document.getElementById('battle-menu');
+    if (menu) menu.hidden = true;
+  },
+
+  refreshCursor: function () {
+    const rows = document.querySelectorAll('#battle-menu-list .battle-move');
+    rows.forEach(function (row, i) {
+      row.classList.toggle('selected', i === Battle.cursor);
+    });
+  },
+
+  moveCursor: function (dir) {
+    const n = Battle.enc.playerAttacks.length;
+    Battle.cursor = dir === 'up'
+      ? (Battle.cursor - 1 + n) % n
+      : (Battle.cursor + 1) % n;
+    Battle.refreshCursor();
+  },
+
+  pickMove: function () {
+    Battle.pickMoveAt(Battle.cursor);
+  },
+
+  pickMoveAt: function (index) {
+    const moves = Battle.enc && Battle.enc.playerAttacks;
+    if (!moves || !moves[index]) return;
+    Battle.useMove(moves[index], 'WIESNHELD');
+  },
+
   // Enter/Space during a battle (routed here by game.js):
-  // typing → show the whole line at once; line done → next line or finish.
+  // typing → show the whole line at once; line done → next line, menu, or finish.
   advance: function () {
-    if (Battle.phase !== 'text') return; // the flash and slide-in can't be skipped
+    if (Battle.phase !== 'text') return; // flash, slide-in and the menu can't be skipped this way
     if (performance.now() - Battle.lineShownAt < 200) return; // swallow double-taps
     if (Battle.typeTimer) {
       clearInterval(Battle.typeTimer);
@@ -179,9 +320,13 @@ const Battle = {
       return;
     }
     if (Battle.lines.length > 0) { Battle.nextLine(); return; }
+    Battle.afterIntro();
+  },
+
+  finish: function () {
     const done = Battle.onDone;
     Battle.cancel();
-    if (done) done(); // encounters.js: IRL mini-game modal, or back to walking
+    if (done) done();
   },
 
   // stop everything and hide the battle screen (also used by game.reset)
@@ -191,8 +336,17 @@ const Battle = {
     if (Battle.typeTimer) { clearInterval(Battle.typeTimer); Battle.typeTimer = null; }
     Battle.phase = 'idle';
     Battle.onDone = null;
-    document.getElementById('battle').hidden = true;
-    document.getElementById('battle-flash').hidden = true;
+    Battle.enc = null;
+    Battle.fought = false;
+    Battle.hideMenu();
+    const foe = document.getElementById('battle-enemy');
+    const hero = document.getElementById('battle-player');
+    if (foe) foe.classList.remove('dashing', 'appearing');
+    if (hero) hero.classList.remove('hit');
+    const battle = document.getElementById('battle');
+    if (battle) battle.hidden = true;
+    const flash = document.getElementById('battle-flash');
+    if (flash) flash.hidden = true;
   },
 
   after: function (ms, fn) { Battle.timers.push(setTimeout(fn, ms)); },

@@ -1,5 +1,5 @@
-// Tejs — sort-games man: billard, pool, krokket, always with a drink.
-// The board is in the basement; this is a quick IRL four-ball round.
+// Tejs — sort-games man. The basement board is pool, so that shot is the strong one.
+// Billard and krokket are his other loves — just not the right attack tonight.
 
 ENCOUNTERS.push({
   id: 'tejs',
@@ -9,17 +9,22 @@ ENCOUNTERS.push({
   image: 'js/encounters/Tejs.png',
   appear: 'A wild TEJS appeared!',
   text: 'Sort-games man. Billard, pool, krokket — always with a Maß in the other hand.',
-
-  run: function (state, done) {
-    UI.showModal({
-      title: 'Four-ball basement pool',
-      body:
-        'Downstairs to Tejs’s board. Cue ball plus <b>four</b> object balls.<br><br>' +
-        'One quick round — sink them. Miss a shot, drink.<br><br>' +
-        'Back from the basement? Weiter!',
-      confirmText: 'Weiter! [Enter]',
-      colors: ['#2e7d32', '#f8f8f0'],
-      onConfirm: done,
-    });
-  },
+  fightPrompt: 'Which sort game do you play?',
+  playerAttacks: [
+    {
+      name: 'POOL',
+      effective: true,
+      result: 'Downstairs, four balls. You sink them. Tejs toasts. Miss a shot next time — drink.',
+    },
+    {
+      name: 'BILLARD',
+      effective: false,
+      result: 'Close — but the board in the basement is pool. Tejs shrugs. Drink.',
+    },
+    {
+      name: 'KROKKET',
+      effective: false,
+      result: 'Wrong lawn. There is no wicket on the Wiesn tonight. Drink.',
+    },
+  ],
 });

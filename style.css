@@ -298,6 +298,8 @@ body {
 /* while the sprites slide in, the boxes and text stay out of sight */
 #battle.intro .battle-info,
 #battle.intro #battle-textbox { visibility: hidden; }
+#battle.menu #battle-text,
+#battle.menu #battle-arrow { display: none; }
 
 .battle-sprite { image-rendering: pixelated; display: block; }
 
@@ -325,6 +327,33 @@ body {
 }
 @keyframes slide-from-left { from { transform: translateX(-110vw); } }
 @keyframes slide-from-right { from { transform: translateX(110vw); } }
+
+/* Pokémon lunge: the foe dashes at you, you flicker like you got hit */
+#battle-enemy.dashing {
+  animation: battle-dash-foe 0.5s ease-in-out;
+}
+@keyframes battle-dash-foe {
+  0%, 100% { transform: translate(0, 0); }
+  40% { transform: translate(-22vw, 16vh); }
+}
+#battle-player.hit {
+  animation: battle-hit 0.45s steps(2, end);
+}
+
+/* ICE used APPEAR! — vanish, then pop back in (yes, it already appeared) */
+#battle-enemy.appearing {
+  animation: battle-appear 1.2s ease-out;
+}
+@keyframes battle-appear {
+  0% { transform: scale(0.05); opacity: 0; }
+  55% { transform: scale(1.14); opacity: 1; }
+  75% { transform: scale(0.94); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes battle-hit {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
 
 /* the soft ground ellipse under each sprite */
 #battle-enemy::after,
@@ -397,6 +426,28 @@ body {
   right: 3.2vmin;
   bottom: 2.4vmin;
   animation: blink 1s infinite; /* reuses the win screen's blink keyframes */
+}
+
+/* FIGHT menu: three named moves, ▶ marks the selected one (arrows or 1/2/3) */
+#battle-menu {
+  display: none;
+  height: 100%;
+}
+#battle.menu #battle-menu { display: flex; flex-direction: column; justify-content: center; gap: 1.2vmin; }
+#battle-menu-prompt {
+  font-size: clamp(14px, 2.6vmin, 32px);
+  margin-bottom: 0.6vmin;
+}
+#battle-menu-list { display: flex; flex-direction: column; gap: 0.4vmin; }
+.battle-move {
+  padding: 0.2vmin 0;
+}
+.battle-move.selected::before {
+  content: '▶ ';
+}
+.battle-move:not(.selected)::before {
+  content: '   ';
+  white-space: pre;
 }
 
 /* ---- win screen ----------------------------------------------------------------------- */
