@@ -4,7 +4,7 @@ One file in this folder = one random encounter. Copy any of them, change the
 fields, add a `<script>` tag for it in `index.html` (next to the other
 encounter tags) — done. No other file needs to change.
 
-Friends (Søren, Kruse, Tejs, Toke) appear **once** per session. ICE may appear
+Friends (Søren, Kruse, Tejs, Toke, Mille) appear **once** per session. ICE may appear
 up to **three** times. `game.reset()` clears the counts.
 
 ## The fields
@@ -16,11 +16,20 @@ up to **three** times. `game.reset()` clears the counts.
 | `level` | the fake `:L12` next to the name (pure flavor — pick something funny) |
 | `maxAppearances` | how many times this one may be rolled (omit = no cap) |
 | `appear` | first text-box line, e.g. `'A wild SØREN appeared!'` |
-| `text` | second text-box line — the punchline |
+| `text` | optional second line (a roast) before the attack / menu |
 | `image` | photo path (friend cutouts, ICE bottle). Skips pixel art when set |
 | `art` | the sprite as ASCII pixel art (see below) — used when there is no `image` |
 | `palette` | which color each art character paints |
-| `run` | optional IRL / mini-game: runs **after** the battle text, then call `done()` |
+| `foeAttack` | they attack you: `{ name, result }` — no menu |
+| `playerAttacks` | you pick a move: array of `{ name, effective, result }` |
+| `fightPrompt` | optional menu heading (default: `What will WIESNHELD do?`) |
+
+## Attacks (the FIGHT box, not a modal)
+
+After the appear text, the battle stays on screen:
+
+- **`foeAttack`** — they move first. The box types `MILLE used TWO HANDS TO ONE!` then the drink punchline. Mille and Kruse dash; ICE uses APPEAR (it pops in again — that's the joke).
+- **`playerAttacks`** — a three-move FIGHT menu. Arrows (or `1`/`2`/`3`) pick a row, Enter uses it. `effective: true` prints “It’s super effective!”; `false` prints “It’s not very effective…”. Toke (fanciest wine), Søren (the real Classic CC) and Tejs (pool) work this way.
 
 ## Photos vs pixel art
 
@@ -50,18 +59,8 @@ palette: { R: '#c41e3a' },
 
 Tip: pick a letter per "material" (H = hat, N = skin...) and it stays readable.
 
-## Want a real mini-game after the battle intro?
-
-Give the entry a `run: function (state, done) { ... }` — the Game Boy battle
-still plays first (photo or pixel art + typewriter roast). When the last line
-is dismissed, `run` opens (a modal, an IRL prompt…). Call `done()` when
-finished.
-
-Friends use this for party activities: CC callouts, leverpostejmad, basement
-pool, a nyrig wine lecture. ICE has no `run` — icing is the punchline.
-
 ## Testing
 
-Open the browser console and run `game.encounterNow('soeren')` — that bypasses
+Open the browser console and run `game.encounterNow('mille')` — that bypasses
 the once/three-times pool. Press `E` in debug mode (backtick) for a random one
 that is still available. `R` resets the counts.

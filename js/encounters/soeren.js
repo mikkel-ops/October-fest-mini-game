@@ -1,5 +1,5 @@
-// Søren — Classic raid lead, bucket hat, ready to assign CC on the Wiesn.
-// Photo sits on the battle screen; the mini-game is IRL (shout the callouts).
+// Søren — Classic raid lead in a bucket hat.
+// FIGHT menu: one real Classic CC, two abilities that do not belong. Pick right to win.
 
 ENCOUNTERS.push({
   id: 'soeren',
@@ -8,19 +8,23 @@ ENCOUNTERS.push({
   maxAppearances: 1,
   image: 'js/encounters/soeren.png',
   appear: 'A wild SØREN appeared!',
-  text: 'Raid lead in a bucket hat. He is already assigning CC between the Maßkrüge.',
-
-  run: function (state, done) {
-    UI.showModal({
-      title: 'Classic pull — CC assignments',
-      body:
-        'One Molten Core trash pull. Søren is raid lead.<br><br>' +
-        '<b>Sheep</b> the mage. <b>Sap</b> the rogue. <b>Trap</b> the hunter.<br><br>' +
-        'Host assigns the three jobs. Miss your callout — you drink.<br>' +
-        'Pull is over? Weiter!',
-      confirmText: 'Weiter! [Enter]',
-      colors: ['#1a3a6b', '#f4d03f'],
-      onConfirm: done,
-    });
-  },
+  text: 'Raid lead. He is assigning CC between the Maßkrüge.',
+  fightPrompt: 'Which Classic CC do you call?',
+  playerAttacks: [
+    {
+      name: 'SHEEP',
+      effective: true,
+      result: 'The mage is polymorphed. Søren nods. Ready check — you drink to the pull.',
+    },
+    {
+      name: 'BLINK',
+      effective: false,
+      result: 'That’s not a CC, raid lead. Wipe. Drink.',
+    },
+    {
+      name: 'HEROIC LEAP',
+      effective: false,
+      result: 'Warriors do that. This is a Classic sheep. Facepalm. Drink.',
+    },
+  ],
 });
