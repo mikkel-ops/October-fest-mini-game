@@ -10,7 +10,7 @@
 //   R             reset the game
 //
 // Console helpers (always available, no debug flag needed) — see window.game
-// at the bottom of game.js: game.give('hofbraeu'), game.teleport(x,y), ...
+// at the bottom of game.js: game.give('hofbraeu'), game.enterTent('hofbraeu'), ...
 
 const Debug = {
 

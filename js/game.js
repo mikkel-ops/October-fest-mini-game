@@ -3,8 +3,8 @@
 // If the game BEHAVES wrong, the fix is in this file.
 //
 // The whole game is one `state` object (inspect it in the console via `game.state`)
-// and one mode string: 'walk' → 'modal' (a popup) or 'battle' (an encounter's
-// battle screen, js/battle.js) → 'walk' → ... → 'win'.
+// and one mode string: 'walk' → 'modal' (a popup) or 'battle' (a street
+// encounter or a booked tent host, js/battle.js) → 'walk' → ... → 'win'.
 
 const state = {
   mode: 'walk',            // 'walk' | 'modal' | 'battle' | 'win'
@@ -188,7 +188,7 @@ function quizChoiceFromKey(code) {
 }
 
 // ---- console helpers -----------------------------------------------------------------
-// Open the browser console and type e.g.:  game.give('hofbraeu')  game.winNow()
+// Open the browser console and type e.g.:  game.give('hofbraeu')  game.enterTent('hofbraeu')
 
 const game = {
   state: state,
@@ -211,6 +211,14 @@ const game = {
     p.tx = tx; p.ty = ty;
     p.px = tx * CONFIG.TILE; p.py = ty * CONFIG.TILE;
     p.moving = false;
+  },
+
+  // Open a tent challenge without walking there: game.enterTent('hofbraeu')
+  // Hofbräu always plays the Pitbull battle intro first (not a street roll).
+  enterTent: function (tentId) {
+    const tent = TENT_BY_ID[tentId];
+    if (!tent) { logEvent('No tent with id "' + tentId + '". Ids: ' + TENTS.map(function (t) { return t.id; }).join(', ')); return; }
+    startChallenge(tent);
   },
 
   // random by default, or pick one: game.encounterNow('soeren')
@@ -242,6 +250,7 @@ window.game = game;
 // ---- boot ------------------------------------------------------------------------------
 
 function init() {
+  computeFerrisBounds();
   const problems = validateMap();
   if (problems.length > 0) {
     const banner = document.getElementById('boot-errors');

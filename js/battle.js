@@ -6,9 +6,10 @@
 // you pick from a FIGHT menu of three attacks → "NAME used MOVE!" → Enter
 // returns to walking.
 //
-// Started by startEncounter() in encounters.js. While state.mode === 'battle',
-// game.js routes keys here (Battle.advance / the menu). WHO can appear lives
-// in js/encounters/ — one file per encounter, see the README there.
+// Started by startEncounter() or a tent's booked host (CHALLENGES.<id>.host).
+// While state.mode === 'battle', game.js routes keys here (Battle.advance /
+// the FIGHT menu). Street encounters live in js/encounters/; tent hosts live
+// on CHALLENGES.<id>.host.
 
 const Battle = {
 

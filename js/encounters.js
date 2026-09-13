@@ -6,6 +6,9 @@
 // one: copy a file there, edit it, and add its <script> tag to index.html.
 // See js/encounters/README.md.
 //
+// Tent hosts (Pitbull in Hofbräu, …) are NOT in this pool. They live on
+// CHALLENGES.<id>.host and always play when you walk into that tent.
+//
 // The battle screen itself (flash, slide-in, text box) is js/battle.js.
 // Chance and cooldown live in config.js (ENCOUNTER_CHANCE, ENCOUNTER_COOLDOWN).
 // How often each one may appear is enc.maxAppearances (counted on state).

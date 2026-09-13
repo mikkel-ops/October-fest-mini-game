@@ -5,41 +5,43 @@
 //   #  fence (solid)          .  grass
 //   T  tree (solid)           =  street
 //   t  tent wall (solid)      o  fairground ride (solid, decoration)
+//   F  Riesenrad footprint (solid) — one big wheel, drawn in draw.js
 //   1-9, a-e  tent ENTRANCES (walkable!) — step onto one to enter that tent.
 //             The character matches `mapChar` in tents.js (a=10, b=11 ... e=14).
 //
 // Layout mirrors the real Theresienwiese map: tents 1-8 along the top street,
-// tents 14..9 along the bottom street, cross streets in between, rides to the east.
+// tents 14..9 along the bottom street, cross streets in between, rides and the
+// Riesenrad at the east end of the grounds.
 // Every row must be exactly the same length — validateMap() checks this at boot
 // and prints plain-English errors in the browser console if something is off.
 
 const MAP = [
-  '############################################',
-  '#..........................................#',
-  '#.tttt.tttt.tttt.tttt.tttt.tttt.tttt.tttt..#',
-  '#.tttt.tttt.tttt.tttt.tttt.tttt.tttt.tttt..#',
-  '#.tttt.tttt.tttt.tttt.tttt.tttt.tttt.tttt..#',
-  '#.t1tt.t2tt.t3tt.t4tt.t5tt.t6tt.t7tt.t8tt..#',
-  '#==========================================#',
-  '#==========================================#',
-  '#.....=..............=..............=......#',
-  '#.TT..=...TT....TT...=..TT......oo..=..oo..#',
-  '#.....=..............=..............=..oo..#',
-  '#.....=..............=......TT......=......#',
-  '#..TT.=....TT........=..............=..oo..#',
-  '#.....=..............=..TT......TT..=......#',
-  '#.....=..............=..............=......#',
-  '#==========================================#',
-  '#==========================================#',
-  '#...ttett.ttdtt.ttctt.ttbtt.ttatt.tt9tt....#',
-  '#...ttttt.ttttt.ttttt.ttttt.ttttt.ttttt....#',
-  '#...ttttt.ttttt.ttttt.ttttt.ttttt.ttttt....#',
-  '#...ttttt.ttttt.ttttt.ttttt.ttttt.ttttt....#',
-  '#..TT.................TT.............TT....#',
-  '#..........TT..................TT..........#',
-  '#.TT..............TT..............TT.......#',
-  '#..........................................#',
-  '############################################',
+  '####################################################',
+  '#..................................................#',
+  '#.tttt.tttt.tttt.tttt.tttt.tttt.tttt.tttt..........#',
+  '#.tttt.tttt.tttt.tttt.tttt.tttt.tttt.tttt..........#',
+  '#.tttt.tttt.tttt.tttt.tttt.tttt.tttt.tttt..........#',
+  '#.t1tt.t2tt.t3tt.t4tt.t5tt.t6tt.t7tt.t8tt..........#',
+  '#==================================================#',
+  '#==================================================#',
+  '#.....=..............=..............=..............#',
+  '#.TT..=...TT....TT...=..TT......oo..=..oo....FFFFF.#',
+  '#.....=..............=..............=..oo....FFFFF.#',
+  '#.....=..............=......TT......=........FFFFF.#',
+  '#..TT.=....TT........=..............=..oo....FFFFF.#',
+  '#.....=..............=..TT......TT..=........FFFFF.#',
+  '#.....=..............=..............=..............#',
+  '#==================================================#',
+  '#==================================================#',
+  '#...ttett.ttdtt.ttctt.ttbtt.ttatt.tt9tt............#',
+  '#...ttttt.ttttt.ttttt.ttttt.ttttt.ttttt............#',
+  '#...ttttt.ttttt.ttttt.ttttt.ttttt.ttttt............#',
+  '#...ttttt.ttttt.ttttt.ttttt.ttttt.ttttt............#',
+  '#..TT.................TT.............TT............#',
+  '#..........TT..................TT..................#',
+  '#.TT..............TT..............TT...............#',
+  '#..................................................#',
+  '####################################################',
 ];
 
 const MAP_W = MAP[0].length;
@@ -53,6 +55,7 @@ const LEGEND = {
   'T': { solid: true,  name: 'tree' },
   't': { solid: true,  name: 'tent wall' },
   'o': { solid: true,  name: 'ride' },
+  'F': { solid: true,  name: 'Riesenrad' },
 };
 TENTS.forEach(function (t) {
   LEGEND[t.mapChar] = { solid: false, name: 'entrance: ' + t.name, tent: t };
@@ -109,6 +112,25 @@ function computeTentTiles() {
   });
 }
 
+// Bounding box of the Riesenrad 'F' tiles — draw.js paints one wheel over this.
+const FERRIS = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity, found: false };
+
+function computeFerrisBounds() {
+  FERRIS.minX = Infinity; FERRIS.maxX = -Infinity;
+  FERRIS.minY = Infinity; FERRIS.maxY = -Infinity;
+  FERRIS.found = false;
+  for (let y = 0; y < MAP_H; y++) {
+    for (let x = 0; x < MAP_W; x++) {
+      if (tileAt(x, y) !== 'F') continue;
+      FERRIS.found = true;
+      FERRIS.minX = Math.min(FERRIS.minX, x);
+      FERRIS.maxX = Math.max(FERRIS.maxX, x);
+      FERRIS.minY = Math.min(FERRIS.minY, y);
+      FERRIS.maxY = Math.max(FERRIS.maxY, y);
+    }
+  }
+}
+
 // ---- boot-time sanity checks ------------------------------------------------
 // Returns an array of plain-English problem descriptions (empty = all good).
 
@@ -147,6 +169,10 @@ function validateMap() {
 
   if (isSolid(CONFIG.START_TX, CONFIG.START_TY)) {
     problems.push('the player start tile (' + CONFIG.START_TX + ',' + CONFIG.START_TY + ') is not walkable.');
+  }
+
+  if (!FERRIS.found) {
+    problems.push('the Riesenrad is missing — add a cluster of "F" tiles at the east end of the map.');
   }
 
   return problems;
