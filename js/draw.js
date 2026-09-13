@@ -10,7 +10,7 @@ const Draw = {
 
   init: function () {
     Draw.canvas = document.getElementById('world');
-    Draw.canvas.width = MAP_W * CONFIG.TILE;   // internal resolution, e.g. 44*16 = 704
+    Draw.canvas.width = MAP_W * CONFIG.TILE;   // internal resolution, e.g. 52*16 = 832
     Draw.canvas.height = MAP_H * CONFIG.TILE;  // e.g. 26*16 = 416
     Draw.ctx = Draw.canvas.getContext('2d');
     window.addEventListener('resize', Draw.fit);
@@ -30,7 +30,7 @@ const Draw = {
 
   // ---- the world ---------------------------------------------------------------
 
-  drawWorld: function () {
+  drawWorld: function (now) {
     const ctx = Draw.ctx;
     const TILE = CONFIG.TILE;
     const C = CONFIG.COLORS;
@@ -71,6 +71,9 @@ const Draw = {
           ctx.arc(px + TILE / 2, py + TILE / 2, 3, 0, 2 * Math.PI);
           ctx.fill();
 
+        } else if (ch === 'F') {
+          // footprint only — the Riesenrad is one sprite, painted after the tiles
+
         } else if (ch === 't') {
           // tent roof: canvas-white with stripes in the tent's brand color
           // (grey stripes if that tent has no challenge yet)
@@ -94,6 +97,75 @@ const Draw = {
           ctx.fillRect(px + TILE - 3, py + 4, 2, 3);
         }
       }
+    }
+
+    Draw.drawFerrisWheel(now);
+  },
+
+  // One Riesenrad over the 'F' cluster: timber A-frame, gold spokes, Bavarian
+  // blue/white gondolas. The cars creep around so the east end feels alive.
+  drawFerrisWheel: function (now) {
+    if (!FERRIS.found) return;
+    const ctx = Draw.ctx;
+    const TILE = CONFIG.TILE;
+    const C = CONFIG.COLORS;
+    const left = FERRIS.minX * TILE;
+    const top = FERRIS.minY * TILE;
+    const w = (FERRIS.maxX - FERRIS.minX + 1) * TILE;
+    const h = (FERRIS.maxY - FERRIS.minY + 1) * TILE;
+    const cx = left + w / 2;
+    const cy = top + h / 2 - 2;
+    const r = Math.min(w, h) / 2 - 5;
+    const spin = ((now || 0) / CONFIG.FERRIS_SPIN_MS) * Math.PI * 2;
+    const cars = 8;
+
+    ctx.strokeStyle = C.ferrisLeg;
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'square';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + 6);
+    ctx.lineTo(left + 6, top + h - 1);
+    ctx.moveTo(cx, cy + 6);
+    ctx.lineTo(left + w - 6, top + h - 1);
+    ctx.stroke();
+
+    ctx.fillStyle = C.ferrisLeg;
+    ctx.fillRect(cx - 11, cy + 10, 22, 3);
+
+    ctx.strokeStyle = C.ferrisSpoke;
+    ctx.lineWidth = 2;
+    for (let i = 0; i < cars; i++) {
+      const a = spin + i * (Math.PI * 2 / cars);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = C.ferrisRim;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = C.ferrisSpoke;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r - 5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = C.ferrisHub;
+    ctx.fillRect(Math.round(cx) - 3, Math.round(cy) - 3, 6, 6);
+    ctx.fillStyle = C.ferrisRim;
+    ctx.fillRect(Math.round(cx) - 1, Math.round(cy) - 1, 2, 2);
+
+    for (let i = 0; i < cars; i++) {
+      const a = spin + i * (Math.PI * 2 / cars);
+      const gx = Math.round(cx + Math.cos(a) * r) - 3;
+      const gy = Math.round(cy + Math.sin(a) * r) - 1;
+      ctx.fillStyle = (i % 2 === 0) ? C.ferrisGondolaA : C.ferrisGondolaB;
+      ctx.fillRect(gx, gy, 6, 5);
+      ctx.fillStyle = C.ferrisSpoke;
+      ctx.fillRect(gx, gy, 6, 1);
     }
   },
 
@@ -315,7 +387,7 @@ const Draw = {
 
   // called every frame from the game loop in game.js
   render: function (now) {
-    Draw.drawWorld();
+    Draw.drawWorld(now);
     Draw.drawActors(now);
     if (state.debug) Debug.drawOverlay(Draw.ctx);
   },
