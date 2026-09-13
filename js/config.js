@@ -19,6 +19,7 @@ const CONFIG = {
   NPC_PAUSE_MAX: 2400,
 
   FERRIS_SPIN_MS: 8000, // one full turn of the Riesenrad — slow, festive, not a blur
+  APPEAR_MS: 3000,      // ICE used APPEAR! — vanish, then a slow 3-second pop-in
 
   // world colors
   COLORS: {

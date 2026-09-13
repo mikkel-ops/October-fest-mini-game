@@ -214,7 +214,7 @@ const game = {
   },
 
   // Open a tent challenge without walking there: game.enterTent('hofbraeu')
-  // Hofbräu always plays the Pitbull battle intro first (not a street roll).
+  // Booked hosts play first (Pitbull, the Gräfin, Caesar) — not a street roll.
   enterTent: function (tentId) {
     const tent = TENT_BY_ID[tentId];
     if (!tent) { logEvent('No tent with id "' + tentId + '". Ids: ' + TENTS.map(function (t) { return t.id; }).join(', ')); return; }

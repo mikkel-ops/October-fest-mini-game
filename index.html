@@ -58,6 +58,21 @@
 
   <!-- battle screen: the Pokémon-style random encounter (run by js/battle.js) -->
   <div id="battle" hidden>
+    <!-- tent-host battles only: Wiesn banner with the official tent mark -->
+    <div id="battle-banner" hidden>
+      <div class="battle-banner-lozenge"></div>
+      <div class="battle-banner-inner">
+        <div id="battle-banner-logo-plate">
+          <img id="battle-banner-logo" alt="">
+        </div>
+        <div class="battle-banner-copy">
+          <div class="battle-banner-kicker"><span id="battle-banner-num"></span> · <span id="battle-banner-brewery"></span></div>
+          <div id="battle-banner-name"></div>
+          <div id="battle-banner-tag"></div>
+        </div>
+      </div>
+      <div class="battle-banner-lozenge"></div>
+    </div>
     <div id="battle-enemy-box" class="battle-info">
       <div class="battle-name-row"><span id="battle-enemy-name"></span><span id="battle-enemy-level"></span></div>
       <div class="battle-hp-row"><span class="battle-hp-label">HP:</span><div class="battle-hp-bar"><div class="battle-hp-fill"></div></div></div>

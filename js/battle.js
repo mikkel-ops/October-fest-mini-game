@@ -62,7 +62,8 @@ const Battle = {
 
   // ---- the sequence ------------------------------------------------------------
 
-  start: function (enc, done) {
+  // tent is optional: booked Festzelt hosts get a Wiesn banner with the tent logo.
+  start: function (enc, done, tent) {
     Battle.cancel(); // clear any leftovers from an aborted battle
     Battle.onDone = done;
     Battle.enc = enc;
@@ -71,6 +72,7 @@ const Battle = {
     // appear (+ optional roast). The attack / menu comes after the last line.
     Battle.lines = [enc.appear, enc.text].filter(Boolean);
     Battle.buildScene(enc);
+    Battle.setBanner(tent);
 
     // 1) the tall-grass flash...
     const flash = document.getElementById('battle-flash');
@@ -132,6 +134,35 @@ const Battle = {
     document.getElementById('battle-text').textContent = '';
     document.getElementById('battle-arrow').hidden = true;
     Battle.hideMenu();
+  },
+
+  // Festzelt banner: official tent mark + name + greeting.
+  // Street encounters pass no tent, so the banner stays hidden.
+  setBanner: function (tent) {
+    const banner = document.getElementById('battle-banner');
+    const battle = document.getElementById('battle');
+    if (!banner || !battle) return;
+    if (!tent) {
+      banner.hidden = true;
+      battle.classList.remove('has-banner');
+      battle.style.removeProperty('--banner');
+      battle.style.removeProperty('--banner-ink');
+      return;
+    }
+    banner.hidden = false;
+    battle.classList.add('has-banner');
+    battle.style.setProperty('--banner', tent.colors[0]);
+    battle.style.setProperty('--banner-ink', tent.colors[1] || '#fff8e7');
+    document.getElementById('battle-banner-num').textContent = tent.num;
+    document.getElementById('battle-banner-brewery').textContent = tent.brewery;
+    document.getElementById('battle-banner-name').textContent = tent.name;
+    document.getElementById('battle-banner-tag').textContent = tent.greeting;
+    const plate = document.getElementById('battle-banner-logo-plate');
+    const logo = document.getElementById('battle-banner-logo');
+    plate.style.background = tent.logoBg || '#111111';
+    logo.src = tent.logo;
+    logo.alt = tent.name;
+    logo.style.filter = tent.logoFilter || '';
   },
 
   // Cosmetic HP bar — green / gold / red like the Game Boy. Pure flavor.
@@ -243,11 +274,14 @@ const Battle = {
   playAppear: function () {
     const foe = document.getElementById('battle-enemy');
     const hero = document.getElementById('battle-player');
+    const ms = CONFIG.APPEAR_MS;
     foe.classList.remove('appearing', 'dashing');
     hero.classList.remove('hit');
     void foe.offsetWidth;
+    foe.style.animationDuration = (ms / 1000) + 's';
     foe.classList.add('appearing');
-    Battle.after(550, function () {
+    // hit when the bottle pops back in (~55% of the 3-second appear)
+    Battle.after(Math.round(ms * 0.55), function () {
       hero.classList.remove('hit');
       void hero.offsetWidth;
       hero.classList.add('hit');
@@ -341,8 +375,12 @@ const Battle = {
     Battle.hideMenu();
     const foe = document.getElementById('battle-enemy');
     const hero = document.getElementById('battle-player');
-    if (foe) foe.classList.remove('dashing', 'appearing');
+    if (foe) {
+      foe.classList.remove('dashing', 'appearing');
+      foe.style.animationDuration = '';
+    }
     if (hero) hero.classList.remove('hit');
+    Battle.setBanner(null);
     const battle = document.getElementById('battle');
     if (battle) battle.hidden = true;
     const flash = document.getElementById('battle-flash');

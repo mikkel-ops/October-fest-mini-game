@@ -7,9 +7,11 @@ encounter tags) — done. No other file needs to change.
 Friends (Søren, Kruse, Tejs, Toke, Mille) appear **once** per session. ICE may appear
 up to **three** times. `game.reset()` clears the counts.
 
-Tent hosts are a different joke. Hofbräu always summons Pitbull via
-`CHALLENGES.hofbraeu.host` — he is **not** in this folder and never rolls on
-the grass. Add the next tent's guest on that tent's `CHALLENGES` entry.
+Tent hosts are a different joke. Hofbräu always summons Pitbull, Weinzelt
+the Gräfin, Käfer Julius Caesar — they are **not** in this folder and
+never roll on the grass. Add the next tent's guest on that tent's
+`CHALLENGES` entry. Booked hosts get a Wiesn banner with the tent logo
+at the top of the battle screen.
 
 ## The fields
 
