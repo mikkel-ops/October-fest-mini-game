@@ -21,6 +21,13 @@ const CONFIG = {
   FERRIS_SPIN_MS: 8000, // one full turn of the Riesenrad — slow, festive, not a blur
   APPEAR_MS: 3000,      // ICE used APPEAR! — vanish, then a slow 3-second pop-in
 
+  // Themed tent popups (Hofbräu's Mr. Worldwide quiz show). Applied as CSS
+  // variables by UI.setShow, so the tent's css file can read them.
+  SHOW: {
+    CHASE_MS: 1100,  // one loop of the marquee's chase lights
+    SWEEP_MS: 6000,  // one drift of the spotlight beams across the stage
+  },
+
   // world colors
   COLORS: {
     grass:      '#79b74a',

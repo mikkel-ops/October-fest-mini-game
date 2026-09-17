@@ -24,6 +24,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wiesn Quest 🍺</title>
   <link rel="stylesheet" href="style.css">
+  <!-- a themed tent keeps its own looks in its own folder, next to its script -->
+  <link rel="stylesheet" href="js/tents/hofbraeu/hofbraeu.css">
+  <link rel="stylesheet" href="js/tents/weinzelt/weinzelt.css">
 </head>
 <body>
 
@@ -48,6 +51,9 @@
   <div id="toast"></div>
 
   <div id="modal" hidden>
+    <!-- only used by themed tents (UI.setShow): the layer their scenery is
+         painted on, so the map stops showing through behind the questions -->
+    <div id="modal-backdrop" hidden></div>
     <div id="modal-box">
       <div id="modal-title"></div>
       <div id="modal-disc"></div>
@@ -111,7 +117,9 @@
   <!-- load order matters: data first, then UI/drawing, game.js last (it boots everything).
        Debugging tip: wrong tent info → tents.js · walked through a wall → map.js
        · looks wrong → draw.js · behaves wrong → game.js · crowd wrong → npcs.js
-       Adding an encounter? Copy a file in js/encounters/ and add its tag below. -->
+       Adding an encounter? Copy a file in js/encounters/ and add its tag below.
+       Opening a tent? Copy a folder in js/tents/ and add its tag below — it has
+       to come AFTER js/challenges.js, which creates the CHALLENGES object. -->
   <script src="js/config.js"></script>
   <script src="js/tents.js"></script>
   <script src="js/map.js"></script>
@@ -124,6 +132,12 @@
   <script src="js/encounters/mille.js"></script>
   <script src="js/encounters/ice.js"></script>
   <script src="js/challenges.js"></script>
+  <!-- One tag per OPEN tent (js/tents/<id>/<id>.js). A tent with no tag here
+       stays closed and grey on the map — that is how the eleven tents without
+       a challenge yet stay out of the party. -->
+  <script src="js/tents/hofbraeu/hofbraeu.js"></script>
+  <script src="js/tents/kaefer/kaefer.js"></script>
+  <script src="js/tents/weinzelt/weinzelt.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/battle.js"></script>
   <script src="js/draw.js"></script>

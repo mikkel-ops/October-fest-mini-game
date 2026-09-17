@@ -9,7 +9,7 @@
 // Started by startEncounter() or a tent's booked host (CHALLENGES.<id>.host).
 // While state.mode === 'battle', game.js routes keys here (Battle.advance /
 // the FIGHT menu). Street encounters live in js/encounters/; tent hosts live
-// on CHALLENGES.<id>.host.
+// in js/tents/<id>/<id>.js on CHALLENGES.<id>.host.
 
 const Battle = {
 

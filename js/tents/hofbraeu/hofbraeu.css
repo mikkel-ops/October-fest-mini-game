@@ -1,0 +1,192 @@
+/* hofbraeu.css — the Mr. Worldwide quiz show, tent 3.
+   Everything here only applies while js/tents/hofbraeu/hofbraeu.js has asked
+   for show: 'worldwide' (that puts .show-worldwide on #modal — see UI.setShow).
+   Every other tent's popups are untouched by this file.
+
+   The look: Miami night. Pitbull hot pink and teal over Hofbräu blue, gold
+   chase lights, three lit podiums, the man himself standing at the side of
+   the stage. Timings come from CONFIG.SHOW in js/config.js. */
+
+/* ---- the set ------------------------------------------------------------- */
+
+/* kill the plain grey wash — we paint our own night sky instead */
+#modal.show-worldwide {
+  background: #05010d;
+}
+
+/* stage floor + two crossed spotlight cones. Three stacked gradients:
+   1) the warm pool of light on the floor, 2+3) the beams coming down. */
+.show-worldwide #modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 45% at 50% 100%, rgba(255, 60, 172, 0.5) 0%, rgba(5, 1, 13, 0) 70%),
+    conic-gradient(from 200deg at 18% -10%, rgba(0, 229, 255, 0) 0deg, rgba(0, 229, 255, 0.22) 14deg, rgba(0, 229, 255, 0) 28deg),
+    conic-gradient(from 130deg at 82% -10%, rgba(255, 214, 10, 0) 0deg, rgba(255, 214, 10, 0.22) 14deg, rgba(255, 214, 10, 0) 28deg);
+  animation: worldwide-sweep var(--show-sweep, 6s) ease-in-out infinite alternate;
+}
+.show-worldwide #modal-backdrop[hidden] { display: none !important; }
+
+/* the beams drift a little, so the stage never looks like a still image */
+@keyframes worldwide-sweep {
+  from { transform: translateX(-2%) scaleX(1); }
+  to   { transform: translateX(2%) scaleX(1.06); }
+}
+
+/* Pitbull himself, standing stage-left as the host. Same photo as the battle
+   sprite — the url is relative to THIS file, so the folder stays portable.
+   Hidden on a narrow screen (a phone has no room for a host). */
+.show-worldwide #modal-backdrop::after {
+  content: '';
+  position: absolute;
+  left: 1vmin;
+  bottom: 0;
+  width: 38vmin;
+  height: 94vmin;
+  background: url('mr_world_wide.png') left bottom / contain no-repeat;
+  /* rim-light him in stage pink so he belongs in the scene, not pasted on it */
+  filter: drop-shadow(8px 0 18px rgba(255, 60, 172, 0.6)) brightness(1.18) contrast(1.05);
+  pointer-events: none;
+}
+@media (max-width: 900px) {
+  .show-worldwide #modal-backdrop::after { display: none; }
+}
+
+/* ---- the question box ---------------------------------------------------- */
+
+.show-worldwide #modal-box {
+  position: relative;
+  background: linear-gradient(#141a3a, #0a0c1f);
+  color: #f6f1ff;
+  border: 0;
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 3px #ffd60a,                 /* gold edge */
+    0 0 0 9px #101436,                 /* dark gap */
+    0 0 42px 10px rgba(255, 60, 172, 0.45), /* pink glow into the room */
+    0 18px 60px rgba(0, 0, 0, 0.75);
+  /* leave room for the host on the left at wide sizes */
+  max-width: min(58vw, 860px);
+  width: min(58vw, 860px);
+  margin-left: 30vmin;
+}
+@media (max-width: 900px) {
+  .show-worldwide #modal-box { margin-left: 0; max-width: 88vw; }
+}
+
+/* The marquee. Three background layers, listed top to bottom:
+     1. a row of round gold bulbs along the top edge
+     2. the same row along the bottom edge
+     3. the pink→blue Miami gradient (the bar itself)
+   Each bulb row is ONE radial-gradient dot tiled sideways (background-size sets
+   the spacing), which is what lets background-position slide them — a dotted
+   border looks similar but cannot animate. */
+.show-worldwide #modal-title {
+  color: #fff8e7;
+  border-radius: 14px 14px 0 0;
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45);
+  padding: 2.4vmin 1.2vmin; /* taller, so the bulb rows don't crowd the text */
+  background-image:
+    radial-gradient(circle closest-side, #ffd60a 0 58%, rgba(255, 214, 10, 0) 62%),
+    radial-gradient(circle closest-side, #ffd60a 0 58%, rgba(255, 214, 10, 0) 62%),
+    linear-gradient(90deg, #ff3cac, #784ba0 55%, #2b86c5);
+  background-size: 2.8vmin 1.3vmin, 2.8vmin 1.3vmin, 100% 100%;
+  background-repeat: repeat-x, repeat-x, no-repeat;
+  background-position: 0 0.5vmin, 0 calc(100% - 0.5vmin), 0 0;
+  animation: worldwide-chase var(--show-chase, 1.1s) linear infinite;
+}
+
+/* the two rows run in opposite directions — that's what sells "chase lights" */
+@keyframes worldwide-chase {
+  from { background-position: 0 0.5vmin, 0 calc(100% - 0.5vmin), 0 0; }
+  to   { background-position: 2.8vmin 0.5vmin, -2.8vmin calc(100% - 0.5vmin), 0 0; }
+}
+
+.show-worldwide #modal-body { font-weight: 600; }
+.show-worldwide #modal-body p { margin-top: 0.6vmin; }
+
+/* ---- round counter lights (built by quizLights in js/challenges.js) ------ */
+
+.quiz-lights {
+  display: flex;
+  justify-content: center;
+  gap: 1.4vmin;
+  margin-bottom: 2vmin;
+}
+.quiz-light {
+  width: 1.8vmin;
+  height: 1.8vmin;
+  min-width: 10px;
+  min-height: 10px;
+  border-radius: 50%;
+  background: #2a2f55;                     /* not asked yet */
+  box-shadow: inset 0 0 0 2px #464c7d;
+}
+.quiz-light.done {                          /* already answered */
+  background: #ffd60a;
+  box-shadow: 0 0 8px #ffd60a;
+}
+.quiz-light.live {                           /* the question on screen now */
+  background: #ff3cac;
+  box-shadow: 0 0 14px 3px rgba(255, 60, 172, 0.8);
+  animation: worldwide-pulse 1s ease-in-out infinite alternate;
+}
+@keyframes worldwide-pulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.35); }
+}
+
+/* ---- the three podiums (the same .quiz-choice buttons, dressed up) ------- */
+
+.show-worldwide .quiz-choices { gap: 1.6vmin; }
+
+.show-worldwide .quiz-choice {
+  position: relative;
+  background: linear-gradient(#1d2450, #121634);
+  color: #f6f1ff;
+  border: 3px solid #2b86c5;
+  border-radius: 0.8em;
+  padding: 1.6vmin 2vmin 1.6vmin 5.5vmin; /* room for the number plate */
+  text-align: left;
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 -0.6vmin 0 rgba(0, 0, 0, 0.45), 0 0.5vmin 0 #0a0c1f;
+  transition: transform 0.08s ease-out, box-shadow 0.12s ease-out;
+}
+
+/* the lit number plate on the left edge of each podium */
+.show-worldwide .quiz-choice::before {
+  content: '';
+  position: absolute;
+  left: 1.4vmin;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.6vmin;
+  height: 2.6vmin;
+  min-width: 14px;
+  min-height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff6c9, #ffd60a 60%, #b98f00);
+  box-shadow: 0 0 10px rgba(255, 214, 10, 0.7);
+}
+
+/* picked / hovered: the podium lights up hot pink and lifts */
+.show-worldwide .quiz-choice:hover,
+.show-worldwide .quiz-choice:focus {
+  background: linear-gradient(#ff3cac, #b81f79);
+  border-color: #ffd60a;
+  color: #fff8e7;
+  outline: none;
+  transform: translateY(-0.4vmin);
+  box-shadow: inset 0 -0.6vmin 0 rgba(0, 0, 0, 0.35), 0 0.9vmin 0 #5c0f3c, 0 0 26px rgba(255, 60, 172, 0.75);
+}
+
+/* ---- the Weiter!/Prost! button ------------------------------------------- */
+
+.show-worldwide #modal-confirm {
+  background: linear-gradient(#ffd60a, #e0a800);
+  color: #1a1204;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 22px rgba(255, 214, 10, 0.55);
+}
