@@ -1,0 +1,216 @@
+/* kaefer.css — the Roman Senate, tent 8.
+   Everything here only applies while js/tents/kaefer/kaefer.js has asked for
+   show: 'senate' (that puts .show-senate on #modal — see UI.setShow).
+   Every other tent's popups are untouched by this file.
+
+   The look: the inside of the Curia. Travertine walls, a fluted colonnade down
+   BOTH edges, a shaft of high window light crossing the floor, and the question
+   on a marble tablet in the middle. Imperial purple and gold throughout.
+
+   Why centred, when Hofbräu and Weinzelt push their box to the right: those two
+   stand a photo cutout stage-left, and Caesar is pixel art, not a photo — there
+   is no PNG to place. So the room itself carries the scene and you stand in the
+   middle of it, which is where you would be addressing the Senate anyway.
+
+   Timings come from CONFIG.SHOW in js/config.js. */
+
+/* ---- the Curia ------------------------------------------------------------ */
+
+/* kill the plain grey wash — we paint the room's own shadow instead */
+#modal.show-senate {
+  background: #1a140e;
+}
+
+/* Seven stacked layers, listed top of the stack down:
+     1) the shaft of window light falling across the room (the only one that moves)
+     2) the left colonnade
+     3) the right colonnade
+     4) the architrave — the dark beam the columns hold up
+     5) the gold fillet under it, which reads as the capitals
+     6) the lit marble floor along the bottom
+     7) the travertine wall behind it all
+
+   The columns are one repeating gradient whose stops go dark → mid → bright →
+   mid → dark across each 4.2vmin period. That shading is what makes them read
+   as round stone drums; flat stripes of one colour just look like wallpaper. */
+.show-senate #modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(101deg, rgba(255, 240, 200, 0) 34%, rgba(255, 240, 200, 0.26) 45%, rgba(255, 240, 200, 0) 57%),
+    repeating-linear-gradient(90deg, #5d503a 0 0.35vmin, #a89a7c 0.35vmin 1.1vmin, #efe7d1 1.1vmin 2.1vmin, #c3b795 2.1vmin 3.4vmin, #5d503a 3.4vmin 4.2vmin),
+    repeating-linear-gradient(90deg, #5d503a 0 0.35vmin, #a89a7c 0.35vmin 1.1vmin, #efe7d1 1.1vmin 2.1vmin, #c3b795 2.1vmin 3.4vmin, #5d503a 3.4vmin 4.2vmin),
+    linear-gradient(#372c1f, #241c13),
+    linear-gradient(#c9a227, #8a6a20),
+    linear-gradient(#9a8a6c, #6d5f47),
+    linear-gradient(#7c6c52, #4f4432);
+  background-size:
+    100% 100%,      /* light shaft */
+    13vmin 100%,    /* left colonnade */
+    13vmin 100%,    /* right colonnade */
+    100% 8vmin,     /* architrave */
+    100% 0.7vmin,   /* gold fillet = the capitals */
+    100% 16vmin,    /* floor */
+    100% 100%;      /* wall */
+  background-position:
+    0 0,
+    left top,
+    right top,
+    left top,
+    left 8vmin,
+    left bottom,
+    0 0;
+  background-repeat: no-repeat;
+  animation: senate-light var(--show-sweep, 6s) ease-in-out infinite alternate;
+}
+.show-senate #modal-backdrop[hidden] { display: none !important; }
+
+/* Only the light shaft moves — the architecture must not wobble, so every other
+   layer repeats its starting position in both keyframes. */
+@keyframes senate-light {
+  from {
+    background-position: -7vmin 0, left top, right top, left top, left 8vmin, left bottom, 0 0;
+  }
+  to {
+    background-position: 7vmin 0, left top, right top, left top, left 8vmin, left bottom, 0 0;
+  }
+}
+
+/* SPQR cut into the architrave, dead centre above the chamber */
+.show-senate #modal-backdrop::before {
+  content: 'S · P · Q · R';
+  position: absolute;
+  top: 1.4vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #c9a227;
+  font-size: 3vmin;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* a laurel wreath laid on the marble at the foot of the chamber */
+.show-senate #modal-backdrop::after {
+  content: '❦';
+  position: absolute;
+  bottom: 1vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(63, 145, 66, 0.5);
+  font-size: 13vmin;
+  line-height: 1;
+}
+@media (max-width: 900px) {
+  .show-senate #modal-backdrop::after { display: none; }
+}
+
+/* ---- the question, cut into a marble tablet ------------------------------- */
+
+.show-senate #modal-box {
+  position: relative;
+  background: linear-gradient(#f2ead6, #ded2b6);
+  color: #2b2318;
+  border: 0;
+  border-radius: 4px; /* Rome did not do rounded corners */
+  box-shadow:
+    0 0 0 3px #5b2c6f,                   /* imperial purple edge */
+    0 0 0 9px #c9a227,                   /* gold band */
+    0 0 0 11px rgba(0, 0, 0, 0.45),      /* the shadow it casts into the wall */
+    0 20px 60px rgba(0, 0, 0, 0.65);
+  /* centred between the two colonnades */
+  max-width: min(62vw, 820px);
+  width: min(62vw, 820px);
+}
+@media (max-width: 900px) {
+  .show-senate #modal-box { max-width: 88vw; width: 88vw; }
+}
+
+/* the inscription band: purple marble with a gold rule under it. Roman
+   inscriptions are all caps with interpuncts, so uppercase whatever it is given
+   and let the copy in kaefer.js supply the V-for-U spelling (CVRIA). */
+.show-senate #modal-title {
+  background: linear-gradient(#5b2c6f, #3d1c4a);
+  color: #f2e4b8;
+  border-radius: 0;
+  border-bottom: 0.5vmin solid #c9a227;
+  padding: 2.2vmin 1.2vmin;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.show-senate #modal-body { font-weight: 600; }
+.show-senate #modal-body p { margin-top: 0.6vmin; }
+
+/* ---- round counter lights ------------------------------------------------- */
+/* Shape, layout and the pulse are shared — they live in style.css. Only the
+   laurel-and-gold colors are ours. */
+
+.show-senate .quiz-light {
+  background: #cabfa3;                      /* not asked yet: blank stone */
+  box-shadow: inset 0 0 0 2px #9a8c70;
+}
+.show-senate .quiz-light.done {             /* already answered: gold */
+  background: #c9a227;
+  box-shadow: 0 0 8px #c9a227;
+}
+.show-senate .quiz-light.live {             /* the question on screen now */
+  background: #3f9142;
+  box-shadow: 0 0 14px 3px rgba(63, 145, 66, 0.8);
+}
+
+/* ---- the three answers, as wax tablets ------------------------------------ */
+
+.show-senate .quiz-choices { gap: 1.6vmin; }
+
+.show-senate .quiz-choice {
+  position: relative;
+  background: linear-gradient(#e2cb98, #cdb079); /* beeswax */
+  color: #3a2a16;
+  border: 3px solid #5b3a1e;                     /* the wooden frame round it */
+  border-radius: 0.3em;
+  padding: 1.6vmin 2vmin 1.6vmin 5.5vmin;        /* room for the stylus */
+  text-align: left;
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 -0.5vmin 0 rgba(91, 58, 30, 0.22), 0 0.5vmin 0 #2f2519;
+  transition: transform 0.08s ease-out, box-shadow 0.12s ease-out;
+}
+
+/* the bronze stylus resting on each tablet — the same spot where Hofbräu puts
+   a stage bulb and Weinzelt a doorbell, so the three sets stay a family */
+.show-senate .quiz-choice::before {
+  content: '';
+  position: absolute;
+  left: 1.4vmin;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.6vmin;
+  height: 2.6vmin;
+  min-width: 14px;
+  min-height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e8d9a8, #a8842a 60%, #6b5015);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.55);
+}
+
+/* picked / hovered: your vote is cast — the tablet goes imperial purple */
+.show-senate .quiz-choice:hover,
+.show-senate .quiz-choice:focus {
+  background: linear-gradient(#5b2c6f, #3d1c4a);
+  border-color: #c9a227;
+  color: #f2e4b8;
+  outline: none;
+  transform: translateY(-0.4vmin);
+  box-shadow: inset 0 -0.5vmin 0 rgba(0, 0, 0, 0.35), 0 0.9vmin 0 #23112c, 0 0 24px rgba(91, 44, 111, 0.7);
+}
+
+/* ---- the Weiter!/Prost! button, as a wax seal ----------------------------- */
+
+.show-senate #modal-confirm {
+  background: linear-gradient(#8c1c24, #64131a);
+  color: #f2e4b8;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  box-shadow: 0 0 0 2px #c9a227, 0 0 18px rgba(140, 28, 36, 0.6);
+}
