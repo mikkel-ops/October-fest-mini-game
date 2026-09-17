@@ -106,35 +106,21 @@
 .show-worldwide #modal-body { font-weight: 600; }
 .show-worldwide #modal-body p { margin-top: 0.6vmin; }
 
-/* ---- round counter lights (built by quizLights in js/challenges.js) ------ */
+/* ---- round counter lights ------------------------------------------------ */
+/* Shape, layout and the pulse are shared — they live in style.css. Only the
+   Miami colors are ours. */
 
-.quiz-lights {
-  display: flex;
-  justify-content: center;
-  gap: 1.4vmin;
-  margin-bottom: 2vmin;
-}
-.quiz-light {
-  width: 1.8vmin;
-  height: 1.8vmin;
-  min-width: 10px;
-  min-height: 10px;
-  border-radius: 50%;
-  background: #2a2f55;                     /* not asked yet */
+.show-worldwide .quiz-light {
+  background: #2a2f55;                      /* not asked yet */
   box-shadow: inset 0 0 0 2px #464c7d;
 }
-.quiz-light.done {                          /* already answered */
+.show-worldwide .quiz-light.done {          /* already answered */
   background: #ffd60a;
   box-shadow: 0 0 8px #ffd60a;
 }
-.quiz-light.live {                           /* the question on screen now */
+.show-worldwide .quiz-light.live {          /* the question on screen now */
   background: #ff3cac;
   box-shadow: 0 0 14px 3px rgba(255, 60, 172, 0.8);
-  animation: worldwide-pulse 1s ease-in-out infinite alternate;
-}
-@keyframes worldwide-pulse {
-  from { transform: scale(1); }
-  to   { transform: scale(1.35); }
 }
 
 /* ---- the three podiums (the same .quiz-choice buttons, dressed up) ------- */

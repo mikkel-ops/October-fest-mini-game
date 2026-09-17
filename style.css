@@ -277,6 +277,41 @@ body {
   outline: none;
 }
 
+/* Round counter lights, built by quizLights() in js/challenges.js: one dot per
+   question — filled = already answered, lit = the one on screen now. Only a
+   THEMED quiz (show:) renders them, but the shape and the pulse live here so
+   every theme inherits them and only has to override colors. They default to
+   the tent's own --accent, so a new theme looks right before it styles them at
+   all. See js/tents/kaefer/kaefer.css for an override. */
+.quiz-lights {
+  display: flex;
+  justify-content: center;
+  gap: 1.4vmin;
+  margin-bottom: 2vmin;
+}
+.quiz-light {
+  width: 1.8vmin;
+  height: 1.8vmin;
+  min-width: 10px;
+  min-height: 10px;
+  border-radius: 50%;
+  background: rgba(128, 128, 128, 0.3); /* not asked yet */
+  box-shadow: inset 0 0 0 2px rgba(128, 128, 128, 0.55);
+}
+.quiz-light.done {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+.quiz-light.live {
+  background: var(--accent);
+  box-shadow: 0 0 14px 3px var(--accent);
+  animation: quiz-light-pulse 1s ease-in-out infinite alternate;
+}
+@keyframes quiz-light-pulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.35); }
+}
+
 /* ---- battle screen (random encounters — the flow lives in js/battle.js) ------------ */
 
 /* the tall-grass flash: the whole screen blinks black a few times before the battle */
