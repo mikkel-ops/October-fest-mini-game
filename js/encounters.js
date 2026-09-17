@@ -48,15 +48,19 @@ function startEncounter(enc) {
     logEvent('Encounter over — back to walking.');
   };
 
-  // The fight (foe move or FIGHT menu) lives on the battle screen now.
-  // enc.run is still here if someone wants a modal after — none of the
-  // friends use it anymore.
-  const afterBattle = function () {
+  // THE turn rule for street encounters, all in one place: lose the fight →
+  // your team loses the turn. foeAttack scenes (ICE, Mille) are always lost —
+  // that's the joke, you never got a say. FIGHT menus (Søren, Toke, Tejs) are
+  // lost only when the wrong move was picked. An encounter with `run` decides
+  // the turn itself (Kruse's rugbrød duel) — its outcome here is ignored.
+  const afterBattle = function (outcome) {
     if (enc.run) {
       state.mode = 'modal';
       enc.run(state, finish);
+    } else if (outcome === 'lost') {
+      Teams.handoff(finish); // the banner announces the other team, Enter → walk
     } else {
-      finish();
+      finish(); // won (or no fight at all) — the same team keeps walking
     }
   };
 

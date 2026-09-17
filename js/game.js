@@ -3,12 +3,19 @@
 // If the game BEHAVES wrong, the fix is in this file.
 //
 // The whole game is one `state` object (inspect it in the console via `game.state`)
-// and one mode string: 'walk' → 'modal' (a popup) or 'battle' (a street
-// encounter or a booked tent host, js/battle.js) → 'walk' → ... → 'win'.
+// and one mode string: 'intro' (team names) → 'walk' → 'modal' (a popup) or
+// 'battle' (a street encounter or a booked tent host, js/battle.js) → 'walk'
+// → ... → 'win'.
 
 const state = {
-  mode: 'walk',            // 'walk' | 'modal' | 'battle' | 'win'
+  mode: 'intro',           // 'intro' | 'walk' | 'modal' | 'battle' | 'win'
   badges: new Set(),       // ids of collected tents, e.g. 'hofbraeu'
+  // two teams share the one Wiesnheld and alternate turns (js/teams.js)
+  teams: [
+    { name: CONFIG.TEAMS.DEFAULT_NAMES[0], score: 0 },
+    { name: CONFIG.TEAMS.DEFAULT_NAMES[1], score: 0 },
+  ],
+  activeTeam: 0,           // index into teams — whose turn it is
   stepsSinceEncounter: 0,  // steps walked since the last random encounter
   encounterCounts: {},     // how many times each encounter id has appeared this session
   lastRoll: null,          // the most recent encounter dice roll (shown in debug panel)
@@ -46,6 +53,18 @@ const held = [];          // held direction keys, most recent last
 let turnLockUntil = 0;    // until this timestamp, a held key only turns the player
 
 window.addEventListener('keydown', function (e) {
+  // Intro screen first, BEFORE the preventDefault below: the team-name inputs
+  // need real typing — WASD, Space and digits are letters here, not game keys.
+  // Only Enter belongs to the game (it starts the party).
+  if (state.mode === 'intro') {
+    if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); Teams.confirmIntro(); }
+    else if (!e.target || e.target.tagName !== 'INPUT') { // clicked outside the inputs
+      if (e.code === 'KeyF') toggleFullscreen();
+      if (e.code === 'Backquote') Debug.toggle();
+    }
+    return;
+  }
+
   const dir = KEYMAP[e.code];
   const confirmKey = e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Space';
   const quizPick = quizChoiceFromKey(e.code);
@@ -55,6 +74,11 @@ window.addEventListener('keydown', function (e) {
 
   if (e.code === 'Backquote') { Debug.toggle(); return; }
   if (e.code === 'KeyF') { toggleFullscreen(); return; }
+
+  // Host controls, usable in ANY mode: real-world games are judged by the host
+  // at the laptop. , = point for team 1, . = point for team 2, Shift subtracts.
+  if (e.code === 'Comma') { Teams.addPoints(0, e.shiftKey ? -CONFIG.TEAMS.HOST_POINT_STEP : CONFIG.TEAMS.HOST_POINT_STEP); return; }
+  if (e.code === 'Period') { Teams.addPoints(1, e.shiftKey ? -CONFIG.TEAMS.HOST_POINT_STEP : CONFIG.TEAMS.HOST_POINT_STEP); return; }
 
   if (state.mode === 'modal') {
     if (confirmKey) UI.confirmModal();
@@ -165,7 +189,8 @@ function awardBadge(tent) {
   UI.refreshTray();
   logEvent('Badge ' + openBadgeCount() + '/' + openTents().length + ': ' + tent.brewery + ' (' + tent.name + ')');
   UI.showFanfare(tent, function () {
-    if (!checkWin()) state.mode = 'walk';
+    if (checkWin()) return; // the win screen preempts the handoff
+    Teams.handoff();        // one tent visit = one turn — the other team is up
   });
 }
 
@@ -231,17 +256,23 @@ const game = {
     startEncounter(enc);
   },
 
+  // Award points from the console: game.points(0, 3) gives team 1 three points.
+  // Same seam as the host's , and . keys — see js/teams.js.
+  points: function (teamIndex, n) { Teams.addPoints(teamIndex, n); },
+
   reset: function () {
     state.badges.clear();
     state.stepsSinceEncounter = 0;
     state.encounterCounts = {};
     state.lastRoll = null;
-    state.mode = 'walk';
+    state.teams.forEach(function (team) { team.score = 0; }); // names survive — only scores reset
+    state.activeTeam = 0;
     game.teleport(CONFIG.START_TX, CONFIG.START_TY);
     state.player.facing = 'down';
     Npcs.spawn();
     UI.hideOverlays();
     UI.refreshTray();
+    Teams.showIntro(); // back to the intro (sets mode), ready for the next round
     logEvent('Game reset. Auf geht’s!');
   },
 };
@@ -279,6 +310,9 @@ function init() {
   window.addEventListener('focus', function () { setTimeout(function () { hint.classList.add('faded'); }, 2500); });
 
   logEvent("O'zapft is! Visit the " + openTents().length + ' open tents. Walk with arrows/WASD, F = fullscreen' + (state.debug ? ', debug ON' : ', ?debug=1 for debug mode') + '.');
+  // Start on the intro screen (team names). Its Enter press is also the user
+  // gesture browsers demand before WebAudio — so the first jingle actually plays.
+  Teams.showIntro();
   requestAnimationFrame(loop);
 }
 

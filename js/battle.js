@@ -24,6 +24,7 @@ const Battle = {
   timers: [],      // all pending timeouts, so cancel() can clear them mid-animation
   cursor: 0,       // selected row in the FIGHT menu
   fought: false,   // true once an attack has been used (so we don't reopen the menu)
+  outcome: null,   // null | 'won' | 'lost' — read by encounters.js to decide the turn
 
   // ---- the hero, seen from behind --------------------------------------------
   // Same lad as draw.js, but big: ASCII pixel art, one character = one pixel,
@@ -234,6 +235,11 @@ const Battle = {
   // Build "NAME used MOVE!" + optional effectiveness + the drink punchline.
   useMove: function (move, userName) {
     Battle.fought = true;
+    // The fight's verdict, for the turn rule in encounters.js: a foe move means
+    // you never got a say (ICE, Mille) — that counts as lost. Your own move wins
+    // only when it was the super-effective pick.
+    Battle.outcome = (userName !== 'WIESNHELD') ? 'lost'
+      : (move.effective === true ? 'won' : 'lost');
     Battle.hideMenu();
     Battle.lines = [userName + ' used ' + move.name + '!'];
     if (move.effective === true) Battle.lines.push("It's super effective!");
@@ -357,10 +363,13 @@ const Battle = {
     Battle.afterIntro();
   },
 
+  // The outcome rides along to the callback. Street encounters use it for the
+  // turn rule; tent-host battles (runIt in challenges.js) simply ignore it.
   finish: function () {
+    const outcome = Battle.outcome;
     const done = Battle.onDone;
     Battle.cancel();
-    if (done) done();
+    if (done) done(outcome);
   },
 
   // stop everything and hide the battle screen (also used by game.reset)
@@ -372,6 +381,7 @@ const Battle = {
     Battle.onDone = null;
     Battle.enc = null;
     Battle.fought = false;
+    Battle.outcome = null;
     Battle.hideMenu();
     const foe = document.getElementById('battle-enemy');
     const hero = document.getElementById('battle-player');

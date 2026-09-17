@@ -570,6 +570,97 @@ body {
 #win-text .win-again { opacity: 0.75; animation: blink 1.6s infinite; }
 @keyframes blink { 50% { opacity: 0.25; } }
 
+/* the team-score line between the headline and the blurb */
+#win-teams { color: #d4af37; font-weight: 900; font-size: clamp(18px, 3.6vmin, 52px) !important; }
+
+/* ---- intro screen (js/teams.js) ------------------------------------------------------------ */
+/* Same full-screen treatment as the win screen — only one of the two is ever visible. */
+
+#intro {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #2c3e50 0%, #101418 75%);
+  z-index: 50;
+}
+
+#intro-box {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2vmin;
+  padding: 0 6vmin;
+}
+
+#intro-box h1 { font-size: clamp(36px, 9vmin, 130px); color: #d4af37; }
+
+#intro-blurb {
+  max-width: 60ch;
+  font-size: clamp(14px, 2.4vmin, 30px);
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* the two team-name rows: label text + a big TV-readable input */
+.intro-label {
+  display: flex;
+  align-items: center;
+  gap: 1.5vmin;
+  font-size: clamp(16px, 2.8vmin, 36px);
+  font-weight: 900;
+  color: #d4af37;
+}
+
+.intro-label input {
+  font: inherit;
+  color: #f4efe2;
+  background: rgba(0, 0, 0, 0.45);
+  border: 3px solid #d4af37;
+  border-radius: 1vmin;
+  padding: 0.8vmin 1.4vmin;
+  width: clamp(200px, 34vmin, 460px);
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+}
+.intro-label input:focus { border-color: #fff; }
+
+#intro .win-again { font-size: clamp(16px, 3vmin, 40px); opacity: 0.75; animation: blink 1.6s infinite; }
+
+/* ---- teams HUD (top-left scoreboard, js/teams.js) ------------------------------------------ */
+
+#teambar {
+  position: fixed;
+  top: 1.5vmin;
+  left: 1.5vmin;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vmin;
+  pointer-events: none;
+}
+
+.team-chip {
+  /* background color is set from CONFIG.TEAMS.COLORS by Teams.refreshScoreboard */
+  color: #fff;
+  font-weight: 900;
+  font-size: clamp(12px, 2.2vmin, 26px);
+  padding: 0.6vmin 1.4vmin;
+  border-radius: 1vmin;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  opacity: 0.55; /* the waiting team fades back */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.team-chip.active {
+  opacity: 1;
+  border-color: #d4af37; /* gold ring = it's your turn */
+}
+
 /* ---- boot errors & debug panel ----------------------------------------------------------- */
 
 #boot-errors {
