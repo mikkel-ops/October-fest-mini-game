@@ -67,6 +67,9 @@ const UI = {
       }
     });
     document.getElementById('counter').textContent = openBadgeCount() + ' / ' + openTents().length;
+    // a won tent turns grey on the map too, so redraw the chips from here —
+    // this is called on every badge and on reset, which is exactly when they change
+    UI.buildLabels();
   },
 
   // ---- tent number labels over the map ---------------------------------------
@@ -78,9 +81,15 @@ const UI = {
     TENTS.forEach(function (tent) {
       const b = TENT_BOUNDS[tent.id];
       const chip = document.createElement('div');
-      chip.className = 'tent-chip' + (tentIsOpen(tent) ? '' : ' closed');
-      chip.textContent = tent.num;
-      if (tentIsOpen(tent)) {
+      const done = tentIsDone(tent);
+      // three states: available (brand colors), already won (grey + a tick),
+      // and not open yet (grey). Only the first is worth walking to.
+      chip.className = 'tent-chip'
+        + (tentIsAvailable(tent) ? '' : ' closed')
+        + (done ? ' done' : '');
+      chip.textContent = done ? '✓' : tent.num;
+      chip.title = tent.num + '. ' + tent.name;
+      if (tentIsAvailable(tent)) {
         chip.style.background = tent.colors[0];
         chip.style.color = tent.colors[1];
       } else {
@@ -108,10 +117,32 @@ const UI = {
     const holder = document.getElementById('modal-disc');
     holder.innerHTML = '';
     if (opts.disc) holder.appendChild(opts.disc);
+    UI.setShow(opts.show);
     modal.hidden = false;
     UI.onConfirm = opts.onConfirm || null;
     UI.onQuizPick = null;
     UI.modalShownAt = performance.now();
+  },
+
+  // Optional per-tent dressing for the modal, passed as `show:` — Hofbräu turns
+  // its quiz into a Mr. Worldwide game show with show: 'worldwide'. The name
+  // becomes the class `show-worldwide` on #modal and switches on the backdrop
+  // layer, so the map no longer shines through behind the questions.
+  //
+  // The looks themselves live in that tent's OWN css file, loaded by a <link>
+  // in index.html next to its <script> — see js/tents/hofbraeu/hofbraeu.css.
+  // Pass nothing (or null) for the plain beige popup every other tent uses.
+  //
+  // Called "show", not "stage", because #stage is already the canvas wrapper.
+  setShow: function (name) {
+    const modal = document.getElementById('modal');
+    // assigning className (instead of adding) drops the previous tent's theme,
+    // so two tents can never end up dressed as each other
+    modal.className = name ? 'show-' + name : '';
+    document.getElementById('modal-backdrop').hidden = !name;
+    // hand the animation speeds to CSS — the numbers stay in config.js
+    modal.style.setProperty('--show-chase', CONFIG.SHOW.CHASE_MS + 'ms');
+    modal.style.setProperty('--show-sweep', CONFIG.SHOW.SWEEP_MS + 'ms');
   },
 
   // Fired by game.js when Enter/Space is pressed while a modal is open.
@@ -130,6 +161,7 @@ const UI = {
       title: opts.title,
       body: opts.body || '',
       colors: opts.colors,
+      show: opts.show, // carry the tent's theme onto the question, if it has one
       confirmText: '',
       onConfirm: null,
     });
@@ -219,28 +251,46 @@ const UI = {
     document.getElementById('modal-confirm').hidden = false;
     UI.onConfirm = null;
     UI.onQuizPick = null;
-    Battle.cancel(); // a battle screen mid-animation counts as an overlay too
+    UI.setShow(null); // a game.reset() mid-quiz must not leave the stage dressed
+    Battle.cancel();  // a battle screen mid-animation counts as an overlay too
   },
 
   // ---- tiny WebAudio jingle (no audio files) -----------------------------------
 
   audioCtx: null,
-  playJingle: function (long) {
+
+  // Play a few notes in a row. Everything audible in the game goes through here,
+  // so there are no sound files to break the double-click launch.
+  //   freqs   — the notes, in Hz, played in order
+  //   spacing — seconds between two notes
+  //   type    — waveform: 'triangle' is soft and chiptune-y, 'sawtooth' is harsh
+  beep: function (freqs, spacing, type) {
     try {
       if (!UI.audioCtx) UI.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const ctx = UI.audioCtx;
-      const notes = long ? [523, 659, 784, 1047, 784, 1047] : [659, 784, 1047];
-      notes.forEach(function (freq, i) {
+      freqs.forEach(function (freq, i) {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = 'triangle';
+        osc.type = type || 'triangle';
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.25);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * spacing);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * spacing + 0.25);
         osc.connect(gain).connect(ctx.destination);
-        osc.start(ctx.currentTime + i * 0.12);
-        osc.stop(ctx.currentTime + i * 0.12 + 0.3);
+        osc.start(ctx.currentTime + i * spacing);
+        osc.stop(ctx.currentTime + i * spacing + 0.3);
       });
     } catch (e) { /* no sound? no problem — the game plays on silently */ }
+  },
+
+  // badge-get (short) and the win screen (long)
+  playJingle: function (long) {
+    UI.beep(long ? [523, 659, 784, 1047, 784, 1047] : [659, 784, 1047], 0.12);
+  },
+
+  // Quiz-show stings: a bright rise when you nail it, a game-show buzzer when
+  // you don't. Used by runQuiz on every answer.
+  playSting: function (correct) {
+    if (correct) UI.beep([784, 1047, 1319], 0.07);
+    else UI.beep([233, 175], 0.13, 'sawtooth');
   },
 };

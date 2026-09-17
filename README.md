@@ -54,8 +54,9 @@ The console always has helpers, e.g. `game.give('hofbraeu')`, `game.teleport(21,
 | Crowd walking wrong, stuck NPCs | `js/npcs.js` |
 | Behaves wrong (movement, input, badges, win) | `js/game.js` |
 | Popups, badge tray, win screen, sounds | `js/ui.js` |
-| **Add a real challenge for a tent** | `js/challenges.js` (registry — see comment there) |
+| **Open a tent / edit what happens inside one** | `js/tents/<id>/` (one folder each — see the README there) |
 | **Add / edit a random encounter** | `js/encounters/` (one file each — see the README there) |
+| Tent registry + the shared quiz flow | `js/challenges.js` |
 | Encounter dice roll & kickoff | `js/encounters.js` |
 | The battle screen (flash, sprites, text box) | `js/battle.js` + the battle section of `style.css` |
 | Debug overlay & hotkeys | `js/debug.js` |
@@ -83,6 +84,28 @@ After `A wild X appeared!` they either attack you or you pick from a FIGHT menu:
 Try one from the console: `game.encounterNow('mille')`. Everything that can
 appear lives in `js/encounters/`, one file per encounter — see the README there.
 
+## Inside the tents
+
+Three tents are open. Each books a guest for a Game Boy battle, whose move hands
+you over to that tent's own challenge:
+
+| Tent | Guest | Then |
+|---|---|---|
+| 3. Hofbräu | Pitbull (Mr. Worldwide) | `MR. WORLDWIDE QUIZ` — the benches become a Miami game-show stage |
+| 8. Käfer | Julius Caesar in Lederhosen | quiz: Romerriget |
+| 9. Weinzelt | Valdemar LaCour-Valentin, mægler | `DER ER RIGTIG MEGET INTERESSE` — then real facts about the Danish housing market |
+
+You always win: the badge is never withheld, the score just picks the closing
+line. Nobody gets locked out of the win screen at 11 pm.
+
+The map tells you where to go at a glance — a tent is coloured only while it is
+worth walking into. Win its badge and it greys out with a ✓; the eleven tents
+with no challenge yet are grey from the start ("Noch zu!" if you walk in).
+
+Each open tent is one folder in `js/tents/`; making a new folder there (plus its
+`<script>` tag) opens that tent. See the README there.
+
 ## Still to come
 
-- Real challenges inside more tents (the `CHALLENGES` registry is the plug-in point)
+- The other eleven tents — each needs a guest of its own, as good as Pitbull or
+  Valdemar, before it is worth opening.

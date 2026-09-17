@@ -75,13 +75,14 @@ const Draw = {
           // footprint only — the Riesenrad is one sprite, painted after the tiles
 
         } else if (ch === 't') {
-          // tent roof: canvas-white with stripes in the tent's brand color
-          // (grey stripes if that tent has no challenge yet)
+          // tent roof: canvas-white with stripes in the tent's brand color.
+          // Grey stripes mean "don't bother": either no challenge yet, or you
+          // already won its badge (tentIsAvailable covers both).
           const tent = TENT_TILES[x + ',' + y];
           ctx.fillStyle = C.tentWall;
           ctx.fillRect(px, py, TILE, TILE);
           if (tent && x % 2 === 0) {
-            ctx.fillStyle = tentIsOpen(tent) ? tent.colors[0] : C.tentClosed;
+            ctx.fillStyle = tentIsAvailable(tent) ? tent.colors[0] : C.tentClosed;
             ctx.fillRect(px, py, TILE, TILE);
           }
 
@@ -90,7 +91,7 @@ const Draw = {
           const tent = LEGEND[ch].tent;
           ctx.fillStyle = C.door;
           ctx.fillRect(px, py, TILE, TILE);
-          ctx.fillStyle = tentIsOpen(tent) ? tent.colors[0] : C.tentClosed;
+          ctx.fillStyle = tentIsAvailable(tent) ? tent.colors[0] : C.tentClosed;
           ctx.fillRect(px, py, TILE, 4);
           ctx.fillStyle = C.tentWall;
           ctx.fillRect(px + 1, py + 4, 2, 3); // two tiny awning tassels

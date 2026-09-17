@@ -54,6 +54,12 @@ body {
   border-color: rgba(255, 255, 255, 0.35);
   opacity: 0.8;
 }
+/* already conquered: a grey tick instead of the number, so the tents still
+   worth walking to are the only colored chips left on the map */
+.tent-chip.done {
+  opacity: 0.65;
+  border-color: rgba(255, 255, 255, 0.5);
+}
 
 /* ---- badge tray --------------------------------------------------------------- */
 

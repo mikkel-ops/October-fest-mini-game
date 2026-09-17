@@ -25,7 +25,8 @@ The player walks the Theresienwiese, enters 14 beer tents, collects badges.
 | `js/encounters.js` | encounter dice roll + kickoff |
 | `js/encounters/*.js` | one file per random encounter (sprite art, name, text) |
 | `js/battle.js` | the Game Boy battle screen for encounters |
-| `js/challenges.js` | per-tent challenges (registry, mostly stubs) |
+| `js/challenges.js` | the `CHALLENGES` registry + the shared 3-question quiz flow |
+| `js/tents/<id>/` | one subfolder per OPEN tent — `<id>.js` registers its host + challenge |
 | `js/ui.js` | all HTML overlays: modals, tray, win screen, sounds |
 | `js/draw.js` | everything painted on the canvas |
 | `js/game.js` | state object, input, movement, game flow — boots everything, loads last |
@@ -33,8 +34,42 @@ The player walks the Theresienwiese, enters 14 beer tents, collects badges.
 
 The whole game is one global `state` object with a mode string:
 `'walk' | 'modal' | 'battle' | 'win'`. Extension points are registries, not
-game-flow edits: `CHALLENGES` (object keyed by tent id) and `ENCOUNTERS`
-(array; each file in `js/encounters/` pushes one entry).
+game-flow edits: `CHALLENGES` (object keyed by tent id; each folder in
+`js/tents/` sets one key — that key is also what makes the tent *open*) and
+`ENCOUNTERS` (array; each file in `js/encounters/` pushes one entry). Both
+kinds of file are loaded by a `<script>` tag in `index.html` — tent files must
+come after `js/challenges.js`.
+
+## Tent mechanics
+
+Full write-up in `js/tents/README.md` — read it before touching a tent. The short
+version:
+
+- Entrance tile → `startChallenge(tent)` → optional **host battle** (booked
+  guest, same screen as encounters, gets a Wiesn banner) → `run(tent, done)` →
+  `done(true)` → `awardBadge` → fanfare.
+- **A tent is open iff `CHALLENGES[<id>]` exists** — i.e. iff its `<script>` tag
+  is in `index.html`. Map chip, tray slot, `0 / N` counter and win screen all
+  derive from that alone. Three tents are open; `js/tents/` holds exactly those
+  three folders and nothing else.
+- **One badge per tent.** `tentIsAvailable(tent)` = open and not yet won, and it
+  is what the map paints from: coloured means "walk here", grey + ✓ means done,
+  grey + number means not open yet. `startChallenge` refuses a won tent.
+- **You always win.** Every tent calls `done(true)` regardless of performance;
+  the score only picks the closing line. It's a party game on a TV — nobody gets
+  locked out at 11 pm. (`done(false)` exists but is deliberately unused.)
+- A host's `foeAttack` is the idiomatic hand-off into the challenge: Hofbräu's
+  move is `MR. WORLDWIDE QUIZ`, which needed no engine code.
+- `runQuiz(tent, spec, done)` is the shared 3-question flow. `spec.show` dresses
+  its popups with a per-tent theme (`UI.setShow` → class `show-<name>` on
+  `#modal` + the `#modal-backdrop` layer); those looks live in the tent's own
+  CSS file with its own `<link>`, e.g. `js/tents/hofbraeu/hofbraeu.css`.
+  **Every popup `runQuiz` opens must pass `show:` along** or the screen snaps
+  back to beige mid-quiz.
+- **The bar for opening a tent is a bespoke joke** — a booked guest with a name,
+  a move and their own questions (Pitbull, Valdemar, Caesar). Generic skill
+  mini-games were tried and cut; don't propose a twelfth variation on a timing
+  bar as a way to open a tent.
 
 ## How to verify changes
 
