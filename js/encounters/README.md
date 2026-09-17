@@ -37,6 +37,25 @@ After the appear text, the battle stays on screen:
 - **`foeAttack`** — they move first. The box types `MILLE used TWO HANDS TO ONE!` then the drink punchline. Mille and Kruse dash; ICE uses APPEAR (it pops in again — that's the joke).
 - **`playerAttacks`** — a three-move FIGHT menu. Arrows (or `1`/`2`/`3`) pick a row, Enter uses it. `effective: true` prints “It’s super effective!”; `false` prints “It’s not very effective…”. Toke (fanciest wine), Søren (the real Classic CC) and Tejs (pool) work this way.
 
+## Winning, losing, and the turn
+
+Since the two-team mode, an encounter's ending decides whether the active team
+keeps the keyboard. The rule lives in ONE place — `afterBattle` in
+`js/encounters.js` — and reads `Battle.outcome`:
+
+- **`foeAttack` only** (Mille, ICE): you never got a move, so the scene always
+  counts as lost → **the active team loses its turn** (handoff banner, other
+  team walks).
+- **`playerAttacks`** (Søren, Toke, Tejs): picking the `effective: true` move
+  wins → same team keeps walking. Any other move loses → turn handed over.
+- **`run(state, finish)`** (Kruse): the encounter decides the turn itself. The
+  hook fires after the battle scene, in `'modal'` mode; call `finish()` when
+  done to return to walking. Kruse uses it for his real-world rugbrød duel —
+  an instruction popup, then a "Who won?" picker whose winner takes the turn
+  via `Teams.setActive` + `Teams.announceTurn(finish)`.
+
+No flags needed on the encounter files — the shape of the fight IS the rule.
+
 ## Photos vs pixel art
 
 Friend encounters and ICE set `image: 'js/encounters/soeren.png'` (a PNG in

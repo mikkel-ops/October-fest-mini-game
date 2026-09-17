@@ -82,6 +82,7 @@ const Debug = {
     const ch = tileAt(p.tx, p.ty);
     Debug.panel.textContent = [
       'mode: ' + state.mode,
+      'turn: ' + state.teams[state.activeTeam].name + '  ·  scores ' + state.teams[0].score + ' / ' + state.teams[1].score,
       'player tile: (' + p.tx + ',' + p.ty + ')  char: "' + ch + '" (' + (LEGEND[ch] ? LEGEND[ch].name : '?') + ')',
       'badges: ' + openBadgeCount() + ' / ' + openTents().length + '  (open tents)',
       'steps since encounter: ' + state.stepsSinceEncounter + ' (cooldown ' + CONFIG.ENCOUNTER_COOLDOWN + ')',
@@ -95,6 +96,7 @@ const Debug = {
       '',
       'teleport: 1-9 0 - = [ ]   B badge   N all',
       'E encounter   R reset   ` close',
+      'host points (any mode): , team1   . team2   Shift = minus',
     ].join('\n');
   },
 

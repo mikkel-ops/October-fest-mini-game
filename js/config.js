@@ -21,6 +21,15 @@ const CONFIG = {
   FERRIS_SPIN_MS: 8000, // one full turn of the Riesenrad — slow, festive, not a blur
   APPEAR_MS: 3000,      // ICE used APPEAR! — vanish, then a slow 3-second pop-in
 
+  // Two-team party mode (js/teams.js). Names are just the prefill on the intro
+  // screen — the players type over them. Colors: [team 1, team 2], used by the
+  // scoreboard chips and the turn banners.
+  TEAMS: {
+    DEFAULT_NAMES: ['TEAM GAMBRINUS', 'TEAM MASSKRUG'],
+    COLORS: ['#1a3a6b', '#c41e3a'],   // Bavarian blue vs Wiesn red
+    HOST_POINT_STEP: 1,               // points per Comma/Period press (Shift = subtract)
+  },
+
   // Themed tent popups (Hofbräu's Mr. Worldwide quiz show). Applied as CSS
   // variables by UI.setShow, so the tent's css file can read them.
   SHOW: {

@@ -179,10 +179,12 @@ const UI = {
     });
     body.appendChild(list);
     UI.onQuizPick = opts.onPick || null;
+    UI.quizChoiceCount = (opts.choices || []).length;
   },
 
   pickQuizChoice: function (index) {
     if (!UI.onQuizPick) return;
+    if (index >= UI.quizChoiceCount) return; // key 3 on a two-choice question does nothing
     if (performance.now() - UI.modalShownAt < 250) return;
     const cb = UI.onQuizPick;
     UI.onQuizPick = null;
@@ -240,6 +242,13 @@ const UI = {
     if (blurb) {
       blurb.textContent = 'You conquered the ' + open.length + ' open tents of the Wiesn!';
     }
+    // the team verdict: whatever the scores say — how points are earned is the
+    // host's business (see js/teams.js), this line just reads them out
+    const a = state.teams[0], b = state.teams[1];
+    const standings = a.name + ' ' + a.score + ' · ' + b.name + ' ' + b.score;
+    document.getElementById('win-teams').textContent = (a.score === b.score)
+      ? standings + ' — Unentschieden! Settle it with a Maßkrugstemmen.'
+      : standings + ' — ' + (a.score > b.score ? a.name : b.name) + ' wins the Wiesn!';
     document.getElementById('win').hidden = false;
     state.winShownAt = performance.now(); // Enter is ignored for a moment so mashing can't skip the payoff
     UI.playJingle(true);
@@ -248,6 +257,7 @@ const UI = {
   hideOverlays: function () {
     document.getElementById('modal').hidden = true;
     document.getElementById('win').hidden = true;
+    document.getElementById('intro').hidden = true; // game.reset() re-shows it right after
     document.getElementById('modal-confirm').hidden = false;
     UI.onConfirm = null;
     UI.onQuizPick = null;

@@ -24,14 +24,36 @@ and open <http://localhost:8000>. For the party: laptop + HDMI + Chrome, press *
 
 | Key | Action |
 |-----|--------|
+| Enter | on the intro screen: lock in the team names, O'zapft is! |
 | Arrows / WASD | walk (tap to turn, hold to walk) |
 | Enter / Space | confirm popups and battle text |
 | ↑ ↓ or 1 / 2 / 3 | pick a FIGHT move on the battle screen |
+| , and . | host only: point for team 1 / team 2 (Shift subtracts) |
 | F | fullscreen |
 | ` (backtick) | debug mode |
 
 Step onto a tent's doorway to take its challenge and win its badge. The tray at
 the bottom shows your 14 badge slots.
+
+## Two teams, one Wiesnheld
+
+The game opens on an intro screen where two teams type their names, then take
+turns steering the same character (the scoreboard top-left shows whose turn it
+is):
+
+- **Conquering a tent ends your turn** — badge first, then the keyboard changes
+  hands.
+- **Losing a wild encounter ends it early.** Getting ICEd or Mille'd always
+  costs the turn; against Søren, Toke or Tejs you keep it only by picking the
+  super-effective FIGHT move.
+- **Kruse starts a real-world rugbrød duel** — first team to smøre three
+  rugbrødsmadder (actual bread, at the table) takes the turn; the host picks
+  the winner on screen.
+
+Points are scored **by the host** for now: `,` and `.` at the laptop (or
+`game.points(0, 3)` in the console) — how points are earned is still being
+decided, and some games happen away from the screen. The win screen reads out
+both scores and names the winner.
 
 ## Debug it
 
@@ -53,6 +75,7 @@ The console always has helpers, e.g. `game.give('hofbraeu')`, `game.teleport(21,
 | Looks wrong (canvas drawing, scaling) | `js/draw.js` |
 | Crowd walking wrong, stuck NPCs | `js/npcs.js` |
 | Behaves wrong (movement, input, badges, win) | `js/game.js` |
+| Teams, turns, the intro screen, the scoreboard | `js/teams.js` |
 | Popups, badge tray, win screen, sounds | `js/ui.js` |
 | **Open a tent / edit what happens inside one** | `js/tents/<id>/` (one folder each — see the README there) |
 | **Add / edit a random encounter** | `js/encounters/` (one file each — see the README there) |

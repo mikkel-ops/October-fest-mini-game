@@ -28,17 +28,40 @@ The player walks the Theresienwiese, enters 14 beer tents, collects badges.
 | `js/challenges.js` | the `CHALLENGES` registry + the shared 3-question quiz flow |
 | `js/tents/<id>/` | one subfolder per OPEN tent — `<id>.js` registers its host + challenge |
 | `js/ui.js` | all HTML overlays: modals, tray, win screen, sounds |
+| `js/teams.js` | two-team mode: intro screen, whose turn it is, turn banners, scoreboard |
 | `js/draw.js` | everything painted on the canvas |
 | `js/game.js` | state object, input, movement, game flow — boots everything, loads last |
 | `js/debug.js` | debug panel + hotkeys (`?debug=1` or backtick) |
 
 The whole game is one global `state` object with a mode string:
-`'walk' | 'modal' | 'battle' | 'win'`. Extension points are registries, not
+`'intro' | 'walk' | 'modal' | 'battle' | 'win'`. Extension points are registries, not
 game-flow edits: `CHALLENGES` (object keyed by tent id; each folder in
 `js/tents/` sets one key — that key is also what makes the tent *open*) and
 `ENCOUNTERS` (array; each file in `js/encounters/` pushes one entry). Both
 kinds of file are loaded by a `<script>` tag in `index.html` — tent files must
 come after `js/challenges.js`.
+
+## Teams & turns
+
+Two teams share the one player character and alternate turns (`js/teams.js`;
+data on `state.teams` / `state.activeTeam`). The rules, all enforced in exactly
+one place each:
+
+- **A turn = one tent visit** — the badge fanfare calls `Teams.handoff()`
+  (`awardBadge` in `js/game.js`).
+- **Losing a street encounter costs the turn** — `Battle.useMove` records
+  `Battle.outcome` ('won' iff the player picked the `effective: true` move;
+  foe-only attacks are always 'lost'), `Battle.finish(outcome)` passes it out,
+  and `afterBattle` in `js/encounters.js` is THE turn rule. Host battles ignore
+  the outcome. An encounter with a `run` hook decides the turn itself (Kruse's
+  real-world rugbrød duel picks a winner on screen).
+- **Points are an open question** — Mikkel hasn't fixed scoring yet, and some
+  games are physical. `Teams.addPoints` is the seam; today only the host's
+  `,` / `.` keys (any mode, Shift subtracts) and `game.points()` call it. Do
+  not wire tent scores into it without asking.
+- The intro screen (mode `'intro'`) takes team names; its keydown branch runs
+  **before** the game's `preventDefault`, so inputs get real typing. Only
+  `Teams.handoff` / `Teams.setActive` may change whose turn it is.
 
 ## Tent mechanics
 

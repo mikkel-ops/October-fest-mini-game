@@ -7,8 +7,12 @@
                 Best on a laptop plugged into the TV, running Chrome. Press F
                 for fullscreen.
 
-  HOW TO PLAY:  walk with arrow keys / WASD. Step into a tent entrance to take
-                its challenge and win its beer badge. Collect all 14!
+  HOW TO PLAY:  two teams take turns steering the one Wiesnheld. Walk with
+                arrow keys / WASD. Step into a tent entrance to take its
+                challenge and win its beer badge — a badge ends your turn, and
+                wild encounters can steal it. The host scores real-world games
+                by hand: , gives team 1 a point, . gives team 2 one (Shift
+                subtracts).
 
   HOW TO DEBUG: open with ?debug=1 (or press ` backtick in game) — grid,
                 collision tint, teleport hotkeys, live stats panel. See the
@@ -43,7 +47,14 @@
   <!-- badge tray: 14 slots + counter -->
   <div id="traybar">
     <div id="tray"></div>
-    <div id="counter">0 / 2</div>
+    <div id="counter">0 / 3</div>
+  </div>
+
+  <!-- teams HUD: both names + scores, the ▶ marks whose turn it is.
+       Hidden during the intro; filled by Teams.refreshScoreboard (js/teams.js) -->
+  <div id="teambar" hidden>
+    <div class="team-chip" id="team-chip-0"></div>
+    <div class="team-chip" id="team-chip-1"></div>
   </div>
 
   <!-- overlays -->
@@ -107,8 +118,27 @@
     <div id="win-badges"></div>
     <div id="win-text">
       <h1>O’zapft is!</h1>
+      <p id="win-teams"></p>
       <p id="win-blurb">You conquered the open tents of the Wiesn!</p>
       <p class="win-again">Press Enter to play again</p>
+    </div>
+  </div>
+
+  <!-- intro screen: shown at boot and after every reset (js/teams.js).
+       Team names are typed here; Enter starts the game — which is also the
+       user gesture that unlocks WebAudio, so the first jingle actually plays. -->
+  <div id="intro" hidden>
+    <div id="intro-box">
+      <h1>WIESN QUEST</h1>
+      <p id="intro-blurb">
+        Zwoa teams, oa Wiesnheld! Take turns steering him across the
+        Theresienwiese. Conquer a tent to win its badge — that ends your turn.
+        Watch the grass: wild friends roam it, and losing a FIGHT (or getting
+        ICEd) costs you the turn. Real-world duels are judged by the host.
+      </p>
+      <label class="intro-label">Team 1 <input id="intro-name-1" maxlength="18" autocomplete="off"></label>
+      <label class="intro-label">Team 2 <input id="intro-name-2" maxlength="18" autocomplete="off"></label>
+      <p class="win-again">Press Enter — O’zapft is!</p>
     </div>
   </div>
 
@@ -139,6 +169,7 @@
   <script src="js/tents/kaefer/kaefer.js"></script>
   <script src="js/tents/weinzelt/weinzelt.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/teams.js"></script>
   <script src="js/battle.js"></script>
   <script src="js/draw.js"></script>
   <script src="js/debug.js"></script>
