@@ -36,7 +36,17 @@ const CONFIG = {
     VOLUME: 0.35,    // 0 = silent, 1 = full blast — kept low so people can still talk over it
     FILES: {
       overworld: 'assets/music/overworld.mp3', // walking the Wiesn, popups, quizzes
-      battle:    'assets/music/battle.mp3',    // wild encounters and tent hosts
+      // Wild encounters and tent hosts. A playlist, played IN THIS ORDER: fight 1
+      // gets the first clip, fight 2 the second, ... then back to the top.
+      // Add, remove or reorder lines freely — any length works.
+      battle: [
+        'assets/music/battle-1.mp3',
+        'assets/music/battle-2.mp3',
+        'assets/music/battle-3.mp3',
+        'assets/music/battle-4.mp3',
+        'assets/music/battle-5.mp3',
+        'assets/music/battle-6.mp3',
+      ],
     },
   },
 

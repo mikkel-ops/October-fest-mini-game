@@ -78,7 +78,7 @@ The console always has helpers, e.g. `game.give('hofbraeu')`, `game.teleport(21,
 | Behaves wrong (movement, input, badges, win) | `js/game.js` |
 | Teams, turns, the intro screen, the scoreboard | `js/teams.js` |
 | Popups, badge tray, win screen, beeps and jingles | `js/ui.js` |
-| Background music (walking tune, battle theme, volume, mute) | `js/music.js` + `CONFIG.MUSIC` in `js/config.js` |
+| Background music (walking tune, battle playlist, volume, mute) | `js/music.js` + `CONFIG.MUSIC` in `js/config.js` |
 | **Open a tent / edit what happens inside one** | `js/tents/<id>/` (one folder each — see the README there) |
 | **Add / edit a random encounter** | `js/encounters/` (one file each — see the README there) |
 | Tent registry + the shared quiz flow | `js/challenges.js` |
