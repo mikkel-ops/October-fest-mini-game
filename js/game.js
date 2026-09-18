@@ -60,6 +60,7 @@ window.addEventListener('keydown', function (e) {
     if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); Teams.confirmIntro(); }
     else if (!e.target || e.target.tagName !== 'INPUT') { // clicked outside the inputs
       if (e.code === 'KeyF') toggleFullscreen();
+      if (e.code === 'KeyM') Music.toggleMute();
       if (e.code === 'Backquote') Debug.toggle();
     }
     return;
@@ -74,6 +75,7 @@ window.addEventListener('keydown', function (e) {
 
   if (e.code === 'Backquote') { Debug.toggle(); return; }
   if (e.code === 'KeyF') { toggleFullscreen(); return; }
+  if (e.code === 'KeyM') { Music.toggleMute(); return; } // works in any mode, like F
 
   // Host controls, usable in ANY mode: real-world games are judged by the host
   // at the laptop. , = point for team 1, . = point for team 2, Shift subtracts.

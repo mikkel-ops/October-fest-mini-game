@@ -82,6 +82,7 @@ const Debug = {
     const ch = tileAt(p.tx, p.ty);
     Debug.panel.textContent = [
       'mode: ' + state.mode,
+      'music: ' + Music.describe(),
       'turn: ' + state.teams[state.activeTeam].name + '  ·  scores ' + state.teams[0].score + ' / ' + state.teams[1].score,
       'player tile: (' + p.tx + ',' + p.ty + ')  char: "' + ch + '" (' + (LEGEND[ch] ? LEGEND[ch].name : '?') + ')',
       'badges: ' + openBadgeCount() + ' / ' + openTents().length + '  (open tents)',

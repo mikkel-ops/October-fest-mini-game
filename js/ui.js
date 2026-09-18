@@ -269,8 +269,9 @@ const UI = {
 
   audioCtx: null,
 
-  // Play a few notes in a row. Everything audible in the game goes through here,
-  // so there are no sound files to break the double-click launch.
+  // Play a few notes in a row. Every beep and jingle in the game goes through
+  // here — generated notes, no sound files. (The background MUSIC is the one
+  // exception: two mp3s played by js/music.js.)
   //   freqs   — the notes, in Hz, played in order
   //   spacing — seconds between two notes
   //   type    — waveform: 'triangle' is soft and chiptune-y, 'sawtooth' is harsh

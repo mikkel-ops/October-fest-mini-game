@@ -30,6 +30,26 @@ const CONFIG = {
     HOST_POINT_STEP: 1,               // points per Comma/Period press (Shift = subtract)
   },
 
+  // Background music (js/music.js). To swap a tune, drop another mp3 into
+  // assets/music/ and change its name here. Credits: assets/music/CREDITS.md.
+  MUSIC: {
+    VOLUME: 0.35,    // 0 = silent, 1 = full blast — kept low so people can still talk over it
+    FILES: {
+      overworld: 'assets/music/overworld.mp3', // walking the Wiesn, popups, quizzes
+      // Wild encounters and tent hosts. A playlist, played IN THIS ORDER: fight 1
+      // gets the first clip, fight 2 the second, ... then back to the top.
+      // Add, remove or reorder lines freely — any length works.
+      battle: [
+        'assets/music/battle-1.mp3',
+        'assets/music/battle-2.mp3',
+        'assets/music/battle-3.mp3',
+        'assets/music/battle-4.mp3',
+        'assets/music/battle-5.mp3',
+        'assets/music/battle-6.mp3',
+      ],
+    },
+  },
+
   // Themed tent popups (Hofbräu's Mr. Worldwide quiz show). Applied as CSS
   // variables by UI.setShow, so the tent's css file can read them.
   SHOW: {

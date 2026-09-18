@@ -27,7 +27,8 @@ The player walks the Theresienwiese, enters 14 beer tents, collects badges.
 | `js/battle.js` | the Game Boy battle screen for encounters |
 | `js/challenges.js` | the `CHALLENGES` registry + the shared 3-question quiz flow |
 | `js/tents/<id>/` | one subfolder per OPEN tent — `<id>.js` registers its host + challenge |
-| `js/ui.js` | all HTML overlays: modals, tray, win screen, sounds |
+| `js/ui.js` | all HTML overlays: modals, tray, win screen, beeps and jingles (generated, no files) |
+| `js/music.js` | background music from `assets/music/` via plain `<audio>` (works on `file://`): one looping walking tune + a battle playlist that advances one clip per fight; M mutes |
 | `js/teams.js` | two-team mode: intro screen, whose turn it is, turn banners, scoreboard |
 | `js/draw.js` | everything painted on the canvas |
 | `js/game.js` | state object, input, movement, game flow — boots everything, loads last |
