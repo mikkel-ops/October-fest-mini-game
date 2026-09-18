@@ -14,9 +14,11 @@
 // POINTS ARE STILL AN OPEN QUESTION. Mikkel hasn't fixed the scoring rules
 // yet, and some games are played away from the screen (rugbrød duels...), so
 // today points are awarded BY THE HOST at the laptop: `,` = team 1, `.` =
-// team 2, Shift subtracts (wired in js/game.js), or game.points(0, 3) in the
-// console. When the rules are decided, wire them into `Teams.addPoints` —
-// e.g. call it from a tent's wrap line with the quiz score. That's the seam.
+// team 2, Shift subtracts (wired in js/game.js), clicking a team's chip in
+// the scoreboard (left = add, right or Ctrl = subtract, wired at the bottom
+// of this file), or game.points(0, 3) in the console. When the rules are
+// decided, wire them into `Teams.addPoints` — e.g. call it from a tent's
+// wrap line with the quiz score. That's the seam.
 
 const Teams = {
 
@@ -104,3 +106,23 @@ const Teams = {
     });
   },
 };
+
+// ---- click-to-score ----------------------------------------------------------
+// The host can also score with the mouse: LEFT-click a team's chip = +1 point,
+// RIGHT-click (or Ctrl-click, for one-button trackpads) = -1. Same step as the
+// , / . keys in js/game.js. Wired once here at load — the chips are static HTML,
+// but `state` only exists once js/game.js has run, so the handlers must touch
+// it only when actually clicked (addPoints does; nothing here reads it now).
+[0, 1].forEach(function (i) {
+  const chip = document.getElementById('team-chip-' + i);
+  chip.addEventListener('click', function (e) {
+    // On Windows/Linux a Ctrl-click arrives as a normal click with ctrlKey set;
+    // on a Mac the browser turns it into the 'contextmenu' event handled below.
+    const step = CONFIG.TEAMS.HOST_POINT_STEP;
+    Teams.addPoints(i, e.ctrlKey ? -step : step);
+  });
+  chip.addEventListener('contextmenu', function (e) {
+    e.preventDefault(); // no browser right-click menu over the game
+    Teams.addPoints(i, -CONFIG.TEAMS.HOST_POINT_STEP);
+  });
+});
