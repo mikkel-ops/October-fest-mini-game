@@ -87,7 +87,10 @@ const Battle = {
 
     // 2) ...then the battle screen with both sprites sliding in...
     Battle.after(850, function () {
-      Music.play('battle'); // the fight music kicks in as the screen appears
+      // The fight music kicks in as the screen appears. enc.music is optional:
+      // a host who brings their own song (Mama Lauda) — everyone else has none
+      // and gets the next clip of the battle playlist.
+      Music.play('battle', enc.music);
       flash.hidden = true;
       const battle = document.getElementById('battle');
       battle.classList.add('intro'); // hides text box + info boxes while sliding

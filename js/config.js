@@ -70,6 +70,30 @@ const CONFIG = {
     ALARM_VOLUME: 1.0,         // the time's-up alarm mp3, 0–1 — it is meant to be LOUD
   },
 
+  // Tent 7, MASSKRUGSTEMMEN (js/tents/paulaner/paulaner.js): one champion per
+  // team holds a full 1-litre Maß at arm's length while this clock counts UP.
+  STEMMEN: {
+    COUNTDOWN_S: 3,            // Enter on READY → "3… 2… 1…" → the clock starts at zero. 0 = start at once
+    END_GUARD_MS: 5000,        // Enter can't end the round this soon after the clock starts (double-tap guard)
+    WARM_S: 60,                // the clock turns orange after a minute…
+    HOT_S: 120,                // …and red (and starts pulsing) after two
+    WEAK_S: 30,                // PROST screen: a final time under this gets the "is that all?" line
+    LEGEND_S: 180,             // PROST screen: a final time from here up gets the "legend" line
+    // What Mama shouts while the arms shake: from `at` seconds on, that line is
+    // on the screen, until the next one takes over. Keep them in rising order.
+    HECKLES: [
+      { at: 0,   line: 'Arms STRAIGHT. Mama is watching.' },
+      { at: 20,  line: 'Niki did a lap of Monaco faster than this.' },
+      { at: 45,  line: 'Is that elbow bending, Bub?' },
+      { at: 60,  line: 'One minute. Mama is only warming up.' },
+      { at: 90,  line: 'Shaking is fine. Spilling is NOT.' },
+      { at: 120, line: 'Two minutes — Respekt!' },
+      { at: 180, line: 'Three minutes. The beer is getting warm.' },
+      { at: 240, line: 'Four minutes?! Somebody call the Wiesn-Wirt.' },
+      { at: 300, line: 'FIVE. You may call her Mama.' },
+    ],
+  },
+
   // world colors
   COLORS: {
     grass:      '#79b74a',

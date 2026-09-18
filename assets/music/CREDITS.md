@@ -36,6 +36,17 @@ Gains used: battle-2 −7, battle-3 +0.8, battle-4 −7, battle-5 +1.5, battle-6
 These are original chiptunes in the Game Boy RPG style — deliberately NOT the
 real Pokémon soundtrack, which is Nintendo's and can't live in a public repo.
 
+## The one song that is NOT here
+
+Tent 7's host, Mama Lauda, plays her own song: `js/tents/paulaner/mama-lauda.mp3`.
+That is a **commercial recording, not CC0**, so it is listed in `.gitignore` and
+is deliberately not part of this public repo — it only exists on the party
+laptop. When the file is missing, the tent plays the battle playlist above
+instead. Please keep it that way: do not `git add -f` it.
+
+(The local copy was made with the same recipe as the clips above, `volume=-2dB`,
+so it sits at the same loudness as the rest.)
+
 ## Want a different tune?
 
 Drop the mp3 in this folder and add (or swap) its line in `CONFIG.MUSIC.FILES`

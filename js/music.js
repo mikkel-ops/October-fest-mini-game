@@ -18,6 +18,11 @@
 //                 the first fight gets clip 1, the next fight clip 2, and so
 //                 on, back to clip 1 after the last. If a fight outlasts its
 //                 clip, the next clip in the list takes over — same order.
+//                 ONE EXCEPTION: a tent host can bring their OWN song
+//                 (`music: '<file>.mp3'` on the host — Mama Lauda does, see
+//                 js/tents/paulaner/paulaner.js). That song then plays instead
+//                 of a playlist clip, on a loop, until the player is back on
+//                 the field. If the file is missing, the playlist steps in.
 //
 // THE RULE: the walking tune belongs to the field. It only plays while the
 // player can walk around (and on the win screen). Once a fight starts, the
@@ -28,7 +33,7 @@
 // WHO CALLS THIS — only a few places, so the music can never get out of step:
 //   Teams.confirmIntro (js/teams.js)      → Music.play('overworld')
 //   Teams.showIntro    (js/teams.js)      → Music.stop()  (the intro is silent)
-//   Battle.start       (js/battle.js)     → Music.stop(), then Music.play('battle')
+//   Battle.start       (js/battle.js)     → Music.stop(), then Music.play('battle', host's own song if any)
 //   startChallenge     (js/challenges.js) → Music.play('battle')  (a tent with no host)
 //   the STOP screen    (js/tents/hacker/hacker.js) → Music.stop()  (quiet for the alarm + the poems)
 //   loop               (js/game.js)       → Music.followMode(state.mode), every frame
@@ -48,6 +53,7 @@ const Music = {
   current: null,   // 'overworld' | 'battle' | null (silence)
   audio: null,     // the <audio> element playing right now, or null
   battleIndex: 0,  // position in the battle playlist of the NEXT clip to play
+  hostSong: null,  // the host's own mp3 while it plays instead of the playlist, else null
   muted: false,    // toggled with the M key
 
   // Make (once) and return the <audio> element for an mp3 file.
@@ -62,6 +68,16 @@ const Music = {
       audio.addEventListener('ended', function () {
         if (Music.current === 'battle' && Music.audio === audio) Music.startNextBattleClip();
       });
+      // A host's own song that can't be loaded (the mp3 is not on this laptop)
+      // must not mean a silent fight: the normal playlist takes over. Only for
+      // host songs — a missing PLAYLIST clip stays silent, as it always has,
+      // so a broken list can't spin through its files forever.
+      audio.addEventListener('error', function () {
+        if (Music.hostSong === file && Music.audio === audio) {
+          Music.hostSong = null;
+          Music.startNextBattleClip();
+        }
+      });
       Music.tracks[file] = audio;
     }
     return Music.tracks[file];
@@ -70,11 +86,15 @@ const Music = {
   // Switch to 'overworld' or 'battle'. Asking for the one already playing does
   // nothing, so callers don't have to check first. It is a hard cut, like the
   // Game Boy.
-  play: function (name) {
+  // `song` is optional and only means something for 'battle': a tent host's
+  // own mp3, played instead of the next playlist clip (see the top of this file).
+  play: function (name, song) {
     if (Music.current === name) return;
     Music.stop();
     Music.current = name;
-    if (name === 'battle') {
+    if (name === 'battle' && song) {
+      Music.startHostSong(song);
+    } else if (name === 'battle') {
       Music.startNextBattleClip();
     } else {
       const audio = Music.getTrack(CONFIG.MUSIC.FILES.overworld);
@@ -108,6 +128,17 @@ const Music = {
     Music.start(audio);
   },
 
+  // A host's own song: from the top, and looping — a Maß can be held for longer
+  // than any song lasts. The playlist bookmark is left alone, so the next
+  // street fight still gets the clip it would have had.
+  startHostSong: function (file) {
+    const audio = Music.getTrack(file);
+    Music.hostSong = file;
+    audio.loop = true;
+    try { audio.currentTime = 0; } catch (e) { /* not loaded yet — it starts at 0 anyway */ }
+    Music.start(audio);
+  },
+
   // Actually press play on an <audio> element.
   start: function (audio) {
     Music.audio = audio;
@@ -125,6 +156,7 @@ const Music = {
     if (Music.audio) Music.audio.pause();
     Music.audio = null;
     Music.current = null;
+    Music.hostSong = null;
   },
 
   // M key. Muting keeps the music running underneath, so un-muting mid-battle
