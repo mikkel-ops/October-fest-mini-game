@@ -12,7 +12,8 @@
                 challenge and win its beer badge — a badge ends your turn, and
                 wild encounters can steal it. The host scores real-world games
                 by hand: , gives team 1 a point, . gives team 2 one (Shift
-                subtracts).
+                subtracts) — or click a team's name in the scoreboard
+                (right-click / Ctrl-click subtracts).
 
   HOW TO DEBUG: open with ?debug=1 (or press ` backtick in game) — grid,
                 collision tint, teleport hotkeys, live stats panel. See the
@@ -52,7 +53,8 @@
   </div>
 
   <!-- teams HUD: both names + scores, the ▶ marks whose turn it is.
-       Hidden during the intro; filled by Teams.refreshScoreboard (js/teams.js) -->
+       Hidden during the intro; filled by Teams.refreshScoreboard (js/teams.js).
+       The chips are also the host's mouse scoring: click = +1, right-click = -1 -->
   <div id="teambar" hidden>
     <div class="team-chip" id="team-chip-0"></div>
     <div class="team-chip" id="team-chip-1"></div>

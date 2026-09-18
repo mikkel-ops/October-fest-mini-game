@@ -680,6 +680,12 @@ body {
 
 .team-chip {
   /* background color is set from CONFIG.TEAMS.COLORS by Teams.refreshScoreboard */
+  /* the chips ARE clickable (host scoring, js/teams.js) even though #teambar
+     above is pointer-events: none — that only keeps the empty space around
+     them click-through, it doesn't cascade once we opt back in here */
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none; /* rapid host clicks must not select the text */
   color: #fff;
   font-weight: 900;
   font-size: clamp(12px, 2.2vmin, 26px);
