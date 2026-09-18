@@ -94,6 +94,60 @@ const CONFIG = {
     ],
   },
 
+  // Tent 13, SNAKE II (js/tents/ochsenbraterei/): two snakes on one keyboard,
+  // team 1 on W A S D, team 2 on the arrow keys. Run your head into anything —
+  // the wall, a beer table, the ox, a Kellnerin, yourself, THE OTHER SNAKE — and
+  // you lose a Lebkuchenherz. Out of hearts = out of the game.
+  // (The floor plan itself is ASCII art in js/tents/ochsenbraterei/snake.js.)
+  SNAKE: {
+    LIVES: 3,                  // Lebkuchenherzen per team
+    START_LENGTH: 4,           // cells, at the start of every round
+    COUNTDOWN_S: 3,            // "3… 2… 1… LOS!" before every round
+    CRASH_PAUSE_MS: 2200,      // after a crash the floor freezes this long, so the room can read who hit what
+
+    // Speed. A round starts slow and gets faster every second, so no round can
+    // last forever — sooner or later somebody misses a turn.
+    STEP_MS: 150,              // time to move one cell when a round starts — smaller = faster
+    STEP_MIN_MS: 85,           // …and it never gets faster than this
+    SPEEDUP_MS_PER_S: 1.0,     // every second of a round shaves this much off a step
+    // The floor has ONE shared clock that ticks 3× per step. A normal snake moves
+    // every 3rd tick, a Bierturbo snake every 2nd — so turbo is 1.5× speed, and
+    // because both snakes move on the same ticks, "who hit whom" is always fair.
+    TICKS_PER_STEP: 3,
+    TURBO_TICKS_PER_STEP: 2,
+    KELLNERIN_TICKS_PER_STEP: 7, // the waitresses stroll: a bit under half a snake's speed
+    INPUT_QUEUE: 2,            // quick "up, then left" key combos are remembered this many turns deep
+
+    // What lies on the floor. BREZN are always there; the others are "specials":
+    // one at a time, it shows up after a random gap and leaves again if nobody eats it.
+    BREZN_ON_FLOOR: 2,
+    SPECIAL_GAP_MS: [3500, 7000],   // [shortest, longest] wait before the next special appears
+    SPECIAL_LIFETIME_MS: 8000,      // an uneaten special disappears after this long…
+    SPECIAL_BLINK_MS: 2500,         // …and blinks for the last bit, as a warning
+    SPAWN_CLEARANCE: 3,             // nothing appears closer than this many cells to a snake's head
+    // How often each special is picked, relative to the others (3 = three times as likely as 1).
+    SPECIAL_WEIGHTS: { semmel: 3, mass: 3, schnaps: 3, herz: 1 },
+    HERZ_MAX_PER_MATCH: 1,          // a spare heart makes the match longer — so at most this many
+
+    TURBO_MS: 5000,            // MASS: you are 1.5× as fast for this long
+    MIRROR_MS: 4000,           // SCHNAPS: the OTHER team steers mirrored (left = right, up = down) for this long
+    GROW: { brezn: 1, semmel: 2 },  // cells a snake grows per bite
+    // Points are this mini-game's own score, shown on the PROST screen. They are
+    // NOT the team scoreboard — see "Points are an open question" in CLAUDE.md.
+    POINTS: { brezn: 1, semmel: 5, mass: 1, schnaps: 1, herz: 2, ko: 3 }, // ko = the other snake ran into YOU
+
+    // The floor is the Nokia's LCD. Snakes are painted in CONFIG.TEAMS.COLORS.
+    COLORS: {
+      floor:    '#c7f0d8',     // LCD green
+      floorDot: '#b3dcc4',     // one dot per cell, so you can count squares
+      eye:      '#ffffff',
+      pupil:    '#10140f',
+      dizzy:    '#ff2fa0',     // pupils of a snake on Schnaps
+      lozenge:  '#ffffff',     // the Bavarian diamond on every other body segment
+      turbo:    '#ffd83a',     // foam-yellow edge on a Bierturbo snake
+    },
+  },
+
   // world colors
   COLORS: {
     grass:      '#79b74a',

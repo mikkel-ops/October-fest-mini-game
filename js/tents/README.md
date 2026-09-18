@@ -14,6 +14,10 @@ js/tents/
     hofbraeu.css              the game-show set
   kaefer/                   tent 8 — Julius Caesar, Romerriget quiz
     kaefer.js
+  ochsenbraterei/           tent 13 — a Nokia 3310, a two-player snake duel ON the TV
+    ochsenbraterei.js         the host, its move, the five screens (rules → floor → prost)
+    snake.js                  the little game itself: floor plan, rules, sprites, painting
+    ochsenbraterei.css        the Nokia's LCD + the floor and scoreboard layout
   paulaner/                 tent 7 — Mama Lauda, a real-world Maß-holding duel
     paulaner.js               the host, her move, the five screens (rules → clock → prost)
     paulaner.css              the race-track set + the DO / DON'T and clock layout
@@ -25,9 +29,9 @@ js/tents/
     weinzelt.css
 ```
 
-Five tents, five folders — that is the whole list. A tent is only worth opening
+Six tents, six folders — that is the whole list. A tent is only worth opening
 once it has a joke of its own as good as Pitbull's or Valdemar's; a generic
-mini-game is not the bar, so the other nine stay closed until they earn one.
+mini-game is not the bar, so the other eight stay closed until they earn one.
 
 Same idea as `js/encounters/`, with one difference: a tent gets a **folder**,
 not a single file, because a tent challenge grows — photos, its own CSS, a
@@ -35,7 +39,7 @@ second round, a little game in another file. Drop those next to the `<id>.js`
 and they stay with their tent.
 
 Tents with nothing in here are **closed**: grey on the map, and walking in
-toasts "Noch zu!" instead of giving a badge. That is how the unfinished 9
+toasts "Noch zu!" instead of giving a badge. That is how the unfinished 8
 tents stay out of the way.
 
 > Tent **names, breweries, colors, logos and greetings** are not in here —
@@ -74,7 +78,7 @@ done(false)  → back to walking, tent stays unbadged (nothing uses this yet)
 Two rules that fall out of this:
 
 - **A tent is OPEN if and only if `CHALLENGES[<id>]` exists.** The map chip, the
-  badge tray slot, the `0 / 5` counter and the win screen all derive from that
+  badge tray slot, the `0 / 6` counter and the win screen all derive from that
   one fact via `tentIsOpen` / `openTents` in `js/challenges.js`. Register a key,
   and the tent lights up everywhere by itself.
 - **`done` must always be called**, or the game is stuck in `'modal'` mode with
@@ -196,7 +200,7 @@ It is called "show", not "stage", because `#stage` is already the canvas wrapper
 
 ## What each open tent does today
 
-Five open. The counter (`0 / 5`), the map colors and the win screen all follow
+Six open. The counter (`0 / 6`), the map colors and the win screen all follow
 from that by themselves.
 
 | Tent | Host | His move | Then |
@@ -206,8 +210,9 @@ from that by themselves.
 | 7. Paulaner | MAMA LAUDA (photo) `:L1` | `MASSKRUGSTEMMEN` | a real-world Maß-holding duel — see below (`show: 'lauda'`) |
 | 8. Käfer | CAESAR (pixel art) `:L44` | — | quiz, Romerriget |
 | 9. Weinzelt | VALDEMAR (photo) `:L89` | `DER ER RIGTIG MEGET INTERESSE` | quiz, the Danish housing market |
+| 13. Ochsenbraterei | NOKIA 3310 (pixel art) `:L3310` | `SNAKE II` | a two-player snake duel on one keyboard — see below (`show: 'nokia'`) |
 
-The other nine are closed, and stay that way until someone writes a guest for
+The other eight are closed, and stay that way until someone writes a guest for
 them worth walking in for.
 
 ### Hacker: the one tent that is not a quiz
@@ -297,6 +302,80 @@ Things worth knowing before you touch it:
 - **Points are not wired in.** The hosts give the winner a point by hand with
   `,` / `.` or by clicking the team chips; `paulaner.css` lifts `#teambar`
   above the popup so that works while `PROST` is still up.
+
+### Ochsenbraterei: the tent that is played ON the TV
+
+Hacker and Paulaner are real-world duels — the TV only runs a clock. Tent 13 is
+the opposite: the game happens on the screen, with **both teams at the laptop
+at the same time**. A NOKIA 3310 that has been lying under the ox spit since
+2001 uses `SNAKE II`, and one champion per team steers a snake in their team
+color: team 1 on `W A S D`, team 2 on the arrow keys.
+
+**The rules** (all of them live in `tick` / `whatIsAt` / `crash` in `snake.js`):
+your head moves into a cell that is not free — the wall, a beer table, the ox, a
+Kellnerin, your own body, or **any part of the other snake** — and you lose a
+Lebkuchenherz. So you attack by cutting the other snake off, and if it runs into
+you, you get the K.O. points too. Three hearts each; out of hearts = lost. After
+every crash both snakes start again, short, from their corners.
+
+| Screen | What it shows | Enter |
+|---|---|---|
+| `RULES` | a green **DO** column and a red **DON'T** column | next |
+| `KEYS` | which team gets `W A S D`, which the arrows | next |
+| `MENU` | the Speisekarte: every item on the floor, with its real sprite | next |
+| `SNAKE` | the floor, a scoreboard per team, big words over it | **starts** the `3… 2… 1…`; while playing, Enter is **PAUSE**; after the K.O. → next |
+| `PROST` | winner, hearts and snake points, the Nokia's verdict | ends the mini-game → `done(true)` |
+
+On the floor: **BREZN** (points, you grow), **OCHSENSEMMEL** (more of both),
+**MASS** (*Bierturbo*: 1.5× speed for a few seconds), **SCHNAPS** (the *other*
+team steers mirrored), **LEBKUCHENHERZ** (a heart back, rare). Two
+**Kellnerinnen** patrol their rows, and the ox on its spit is the centrepiece.
+
+Things worth knowing before you touch it:
+
+- Two files: `ochsenbraterei.js` is the host and the five popups;
+  `snake.js` is the game (the global `SnakeDuel`). Both need a `<script>` tag,
+  `snake.js` first.
+- Every number is in `CONFIG.SNAKE` (`js/config.js`): hearts, speeds, how long
+  a Schnaps lasts, how often each special shows up, the points, the floor
+  colors. Want a longer match? Change `LIVES`.
+- The **floor plan is ASCII art** at the top of `snake.js`, same idea as
+  `js/map.js`: `T` table, `O` ox, `K` Kellnerin, `1` / `2` the two starts. It is
+  the same turned upside down (180°), which is what makes the corners fair —
+  keep it that way when you move the furniture. The sprites are ASCII art too,
+  turned into tiny canvases by `Battle.spriteCanvas`, like a host's `art`.
+- **One shared clock.** The floor ticks 3× per step; a normal snake moves every
+  3rd tick, a Bierturbo snake every 2nd. On each tick every mover is judged
+  against the floor *as it is before anyone moves*, so "who hit whom" never
+  depends on which snake the code looks at first. Two heads into one cell: both
+  crash — unless both are on their last heart, then it does not count (the
+  match needs one winner).
+- Rounds **speed up every second** (`SPEEDUP_MS_PER_S`), so no round can last
+  forever.
+- **Enter always closes a popup** (`UI.confirmModal`), and the floor is one
+  popup that has to stay up for a whole match. So every Enter lands in
+  `onFloorEnter`, which decides what it meant (start / pause / on to `PROST`)
+  and puts the floor **straight back up**. That rebuilds the HTML, which is
+  harmless: `SnakeDuel` keeps the match in its own variables and looks
+  `#snake-canvas` up again on every frame. The css switches the box's pop-in
+  bounce off on this one screen, so a pause does not make it jump.
+- The same every-frame lookup is the `game.reset()` safety: canvas gone or
+  `#modal` hidden → the loop stops ITSELF and takes its key listener with it.
+- Steering is a **second `keydown` listener**, added by `SnakeDuel.begin` and
+  removed by `SnakeDuel.stop`. `js/game.js` keeps handling Enter / Space (the
+  pause), `M`, `F` and the host's `,` `.` keys as always — no engine edits.
+  Turns are queued two deep, so a quick "up, then left" inside one step works.
+- Unlike the deadline clocks next door, the game counts **frame time** (capped
+  at 100 ms a frame): a game nobody can see must stand still, and
+  `requestAnimationFrame` pauses by itself in a hidden tab.
+- **Points are not wired in.** Snake points are this mini-game's own score and
+  only show on `PROST`. The hosts give the winner a real point by hand;
+  `ochsenbraterei.css` lifts `#teambar` above the popup so that works.
+- The battle music simply keeps playing; nothing calls `Music.stop()`.
+
+Test hooks: `SnakeDuel.phase`, `.snakes`, `.items`, `.paused`, `.tick()`; set
+`SnakeDuel.paused = true` and place snakes by hand to test a rule without the
+frame loop racing you.
 
 ## Three states, one glance at the map
 

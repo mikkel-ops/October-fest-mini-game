@@ -111,21 +111,23 @@ appear lives in `js/encounters/`, one file per encounter — see the README ther
 
 ## Inside the tents
 
-Four tents are open. Each books a guest for a Game Boy battle, whose move hands
+Six tents are open. Each books a guest for a Game Boy battle, whose move hands
 you over to that tent's own challenge:
 
 | Tent | Guest | Then |
 |---|---|---|
 | 3. Hofbräu | Pitbull (Mr. Worldwide) | `MR. WORLDWIDE QUIZ` — the benches become a Miami game-show stage |
 | 4. Hacker | Jensen Huang, leather jacket over Lederhosen | `POEM WITH A GRAPHICS CARD` — a real-world duel: both teams get Claude or ChatGPT to write a rhyming Danish Oktoberfest poem on their phones (one about MIKKEL, one about JAKOB) while a 4:00 clock runs on the TV. An alarm rings at zero, the phones read the poems aloud, the two hosts judge |
+| 7. Paulaner | Mama Lauda, mother of Niki | `MASSKRUGSTEMMEN` — a real-world duel: one champion per team holds a full Maß at arm's length while a clock counts up on the TV |
 | 8. Käfer | Julius Caesar in Lederhosen | quiz: Romerriget |
 | 9. Weinzelt | Valdemar LaCour-Valentin, mægler | `DER ER RIGTIG MEGET INTERESSE` — then real facts about the Danish housing market |
+| 13. Ochsenbraterei | a Nokia 3310 in a Tirolerhut | `SNAKE II` — the one game played ON the TV: a two-player snake duel on one keyboard (team 1 `W A S D`, team 2 the arrows). Cut the other snake off to cost it a Lebkuchenherz; eat Brezn, grab the Maß (*Bierturbo*) and the Schnaps (the other team steers mirrored), mind the Kellnerinnen and the ox |
 
 You always win: the badge is never withheld, the score just picks the closing
 line. Nobody gets locked out of the win screen at 11 pm.
 
 The map tells you where to go at a glance — a tent is coloured only while it is
-worth walking into. Win its badge and it greys out with a ✓; the ten tents
+worth walking into. Win its badge and it greys out with a ✓; the eight tents
 with no challenge yet are grey from the start ("Noch zu!" if you walk in).
 
 Each open tent is one folder in `js/tents/`; making a new folder there (plus its
@@ -133,5 +135,5 @@ Each open tent is one folder in `js/tents/`; making a new folder there (plus its
 
 ## Still to come
 
-- The other ten tents — each needs a guest of its own, as good as Pitbull or
+- The other eight tents — each needs a guest of its own, as good as Pitbull or
   Valdemar, before it is worth opening.
