@@ -71,6 +71,7 @@ const Teams = {
   // two inputs — js/game.js routes only Enter while mode is 'intro'.
   showIntro: function () {
     state.mode = 'intro';
+    Music.stop(); // a game.reset() mid-quiz must not leave the fight music on; the intro is silent, as at boot
     document.getElementById('teambar').hidden = true;
     // prefill with the current names so "play again" keeps what was typed
     document.getElementById('intro-name-1').value = state.teams[0].name;
