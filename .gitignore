@@ -1,0 +1,2 @@
+# Python leaves these behind when assets/music/source/make_medley.py is run
+__pycache__/

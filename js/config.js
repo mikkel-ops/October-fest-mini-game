@@ -35,7 +35,9 @@ const CONFIG = {
   MUSIC: {
     VOLUME: 0.35,    // 0 = silent, 1 = full blast — kept low so people can still talk over it
     FILES: {
-      overworld: 'assets/music/overworld.mp3', // walking the Wiesn, popups, quizzes
+      // Walking the Wiesn, popups, quizzes: a chiptune medley of beer-tent songs
+      // ("Ein Prosit", "Bier her", ...). How it was made: assets/music/CREDITS.md.
+      overworld: 'assets/music/overworld.mp3',
       // Wild encounters and tent hosts. A playlist, played IN THIS ORDER: fight 1
       // gets the first clip, fight 2 the second, ... then back to the top.
       // Add, remove or reorder lines freely — any length works.
