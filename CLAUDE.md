@@ -28,7 +28,7 @@ The player walks the Theresienwiese, enters 14 beer tents, collects badges.
 | `js/challenges.js` | the `CHALLENGES` registry + the shared 3-question quiz flow |
 | `js/tents/<id>/` | one subfolder per OPEN tent — `<id>.js` registers its host + challenge |
 | `js/ui.js` | all HTML overlays: modals, tray, win screen, beeps and jingles (generated, no files) |
-| `js/music.js` | background music from `assets/music/` via plain `<audio>` (works on `file://`): one looping walking tune + a battle playlist that advances one clip per fight; the walking tune only plays on the field (`Music.followMode`, every frame) — battle music carries through the tent quiz; M mutes |
+| `js/music.js` | background music from `assets/music/` via plain `<audio>` (works on `file://`): one looping walking tune + a battle playlist that advances one clip per fight (a tent host may bring their own song instead: `music:` on the host, falls back to the playlist if the file is missing); the walking tune only plays on the field (`Music.followMode`, every frame) — battle music carries through the tent quiz; M mutes |
 | `js/teams.js` | two-team mode: intro screen, whose turn it is, turn banners, scoreboard |
 | `js/draw.js` | everything painted on the canvas |
 | `js/game.js` | state object, input, movement, game flow — boots everything, loads last |
@@ -74,8 +74,8 @@ version:
   `done(true)` → `awardBadge` → fanfare.
 - **A tent is open iff `CHALLENGES[<id>]` exists** — i.e. iff its `<script>` tag
   is in `index.html`. Map chip, tray slot, `0 / N` counter and win screen all
-  derive from that alone. Four tents are open; `js/tents/` holds exactly those
-  four folders and nothing else.
+  derive from that alone. Five tents are open; `js/tents/` holds exactly those
+  five folders and nothing else.
 - **One badge per tent.** `tentIsAvailable(tent)` = open and not yet won, and it
   is what the map paints from: coloured means "walk here", grey + ✓ means done,
   grey + number means not open yet. `startChallenge` refuses a won tent.
@@ -97,8 +97,16 @@ version:
   and Enter on `LISTEN` calls `done(true)`. Numbers in `CONFIG.POEM`. `STOP`
   calls `Music.stop()` so the alarm and the poems get a quiet room. It does
   NOT call `Teams.addPoints` — the two hosts score by hand.
+- **Paulaner (tent 7, Mama Lauda, `MASSKRUGSTEMMEN`) is the same pattern with
+  a clock that counts UP**: one champion per team holds a full Maß at arm's
+  length. `RULES` → `CHAMPION` → `READY` → `HOLD` → `PROST`; Enter starts the
+  clock (after a `3… 2… 1…`) and Enter stops it once both are out — nothing
+  else, by Jakob's explicit choice (no per-team split keys). Numbers and Mama's
+  heckles in `CONFIG.STEMMEN`. It plays her own song via the host's `music:`
+  field and never calls `Music.stop()`. **`mama-lauda.mp3` is gitignored — a
+  commercial recording in a public repo; never commit it.** No `Teams.addPoints`.
 - **The bar for opening a tent is a bespoke joke** — a booked guest with a name,
-  a move and their own game (Pitbull, Valdemar, Caesar, Jensen Huang). Generic skill
+  a move and their own game (Pitbull, Valdemar, Caesar, Jensen Huang, Mama Lauda). Generic skill
   mini-games were tried and cut; don't propose a twelfth variation on a timing
   bar as a way to open a tent.
 

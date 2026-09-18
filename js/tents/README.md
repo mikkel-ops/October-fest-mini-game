@@ -14,15 +14,20 @@ js/tents/
     hofbraeu.css              the game-show set
   kaefer/                   tent 8 — Julius Caesar, Romerriget quiz
     kaefer.js
+  paulaner/                 tent 7 — Mama Lauda, a real-world Maß-holding duel
+    paulaner.js               the host, her move, the five screens (rules → clock → prost)
+    paulaner.css              the race-track set + the DO / DON'T and clock layout
+    mama_lauda.jpg            the photo (battle sprite + stage host)
+    mama-lauda.mp3            her song — NOT in the repo, see "Paulaner" below
   weinzelt/                 tent 9 — Valdemar the mægler, housing quiz
     weinzelt.js
     real_estate.png
     weinzelt.css
 ```
 
-Four tents, four folders — that is the whole list. A tent is only worth opening
+Five tents, five folders — that is the whole list. A tent is only worth opening
 once it has a joke of its own as good as Pitbull's or Valdemar's; a generic
-mini-game is not the bar, so the other ten stay closed until they earn one.
+mini-game is not the bar, so the other nine stay closed until they earn one.
 
 Same idea as `js/encounters/`, with one difference: a tent gets a **folder**,
 not a single file, because a tent challenge grows — photos, its own CSS, a
@@ -30,7 +35,7 @@ second round, a little game in another file. Drop those next to the `<id>.js`
 and they stay with their tent.
 
 Tents with nothing in here are **closed**: grey on the map, and walking in
-toasts "Noch zu!" instead of giving a badge. That is how the unfinished 10
+toasts "Noch zu!" instead of giving a badge. That is how the unfinished 9
 tents stay out of the way.
 
 > Tent **names, breweries, colors, logos and greetings** are not in here —
@@ -69,7 +74,7 @@ done(false)  → back to walking, tent stays unbadged (nothing uses this yet)
 Two rules that fall out of this:
 
 - **A tent is OPEN if and only if `CHALLENGES[<id>]` exists.** The map chip, the
-  badge tray slot, the `0 / 4` counter and the win screen all derive from that
+  badge tray slot, the `0 / 5` counter and the win screen all derive from that
   one fact via `tentIsOpen` / `openTents` in `js/challenges.js`. Register a key,
   and the tent lights up everywhere by itself.
 - **`done` must always be called**, or the game is stuck in `'modal'` mode with
@@ -122,6 +127,7 @@ screen:
 | `foeAttack` | `{ name, result }` — they move on you, no menu |
 | `playerAttacks` | `[{ name, effective, result }]` — a 3-move FIGHT menu |
 | `fightPrompt` | menu heading (default `What will WIESNHELD do?`) |
+| `music` | optional mp3 of the host's OWN song. It plays instead of the battle playlist, looping, until the player is back on the field. If the file is missing the playlist plays as usual (`Music.startHostSong` in `js/music.js`). Only Mama Lauda has one. |
 
 A host is **booked**, not random: this tent summons this guest every single
 time. Never push a host into `ENCOUNTERS` — hosts must not roll on the grass.
@@ -190,17 +196,18 @@ It is called "show", not "stage", because `#stage` is already the canvas wrapper
 
 ## What each open tent does today
 
-Four open. The counter (`0 / 4`), the map colors and the win screen all follow
+Five open. The counter (`0 / 5`), the map colors and the win screen all follow
 from that by themselves.
 
 | Tent | Host | His move | Then |
 |---|---|---|---|
 | 4. Hacker | JENSEN (pixel art, placeholder) `:L5090` | `POEM WITH A GRAPHICS CARD` | a real-world AI poetry duel — see below (`show: 'cloud'`) |
 | 3. Hofbräu | PITBULL (photo) `:L305` | `MR. WORLDWIDE QUIZ` | quiz on a Miami game-show stage (`show: 'worldwide'`) |
+| 7. Paulaner | MAMA LAUDA (photo) `:L1` | `MASSKRUGSTEMMEN` | a real-world Maß-holding duel — see below (`show: 'lauda'`) |
 | 8. Käfer | CAESAR (pixel art) `:L44` | — | quiz, Romerriget |
 | 9. Weinzelt | VALDEMAR (photo) `:L89` | `DER ER RIGTIG MEGET INTERESSE` | quiz, the Danish housing market |
 
-The other ten are closed, and stay that way until someone writes a guest for
+The other nine are closed, and stay that way until someone writes a guest for
 them worth walking in for.
 
 ### Hacker: the one tent that is not a quiz
@@ -243,6 +250,53 @@ Things worth knowing before you touch it:
   Rhyme — one point each) and score by hand with `,` / `.` or by clicking the
   team chips; `hacker.css` lifts `#teambar` above the popup so that works while
   `LISTEN` is still up.
+
+### Paulaner: the other tent that is not a quiz
+
+`js/tents/paulaner/paulaner.js` is built on the Hacker pattern — a real-world
+duel where the TV only explains the rules and runs the clock — but the clock
+counts **up**. Each team sends one champion; both hold a full 1-litre Maß at
+arm's length; the last arm standing wins. The tent with a giant beer mug on its
+tower books MAMA LAUDA, mother of Niki, from the après-ski anthem. Her level is
+`:L1` because that is what the battle screen prints: **1 L**.
+
+| Screen | What it shows | Enter |
+|---|---|---|
+| `RULES` | a green **DO** column and a red **DON'T** column | next |
+| `CHAMPION` | both teams: send ONE champion to the front | next |
+| `READY` | the big clock, waiting at `0:00.0` | **starts** it: `3… 2… 1…`, then the clock runs |
+| `HOLD` | the clock counting up, and Mama heckling underneath | **stops** it — press when BOTH champions are out |
+| `PROST` | the final time (= the winner's time) and Mama's verdict | ends the mini-game → `done(true)` |
+
+Things worth knowing before you touch it:
+
+- Every number is in `CONFIG.STEMMEN` (`js/config.js`): the countdown, the
+  double-tap guard, when the clock turns orange and red, the verdict limits —
+  and `HECKLES`, the list of what Mama shouts and from which second.
+- **Enter starts it and Enter stops it — that is the whole control scheme**, on
+  purpose. The game does not know who dropped first; the room does.
+- The clock is computed from the moment it **started** (`performance.now()`),
+  not by counting ticks, and its interval **stops itself** when its clock
+  element is gone or `#modal` is hidden — same safety as Hacker's, so
+  `game.reset()` mid-round leaves nothing running.
+- The `3… 2… 1…` is not a separate screen: Enter on `READY` puts the start
+  moment `COUNTDOWN_S` seconds into the future, and while "now" is before it the
+  clock shows the countdown. Set `COUNTDOWN_S: 0` to start at once.
+- `END_GUARD_MS`: until the clock has run for 5 seconds, Enter just re-shows it,
+  so a double-tap on "START" can't end the round during the countdown.
+- **Her song.** The host has `music: 'js/tents/paulaner/mama-lauda.mp3'`, so the
+  fight and the whole duel play her song instead of the battle playlist (the
+  only host who does — see `music` in the host fields above). Unlike Hacker,
+  nothing here calls `Music.stop()`: a stamina duel wants a soundtrack.
+  **The mp3 is a commercial recording and this repo is public, so the file is in
+  `.gitignore` and must stay there.** Copy it into `js/tents/paulaner/` on the
+  party laptop by hand. If it is missing, the normal battle music plays and
+  nothing else changes.
+- The photo is a phone screenshot with black bars. `paulaner.css` keeps the
+  left side of the set black so the bars vanish next to the popups.
+- **Points are not wired in.** The hosts give the winner a point by hand with
+  `,` / `.` or by clicking the team chips; `paulaner.css` lifts `#teambar`
+  above the popup so that works while `PROST` is still up.
 
 ## Three states, one glance at the map
 

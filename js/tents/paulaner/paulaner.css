@@ -1,0 +1,321 @@
+/* paulaner.css — MASSKRUGSTEMMEN, tent 7.
+   Everything here only applies while js/tents/paulaner/paulaner.js has asked
+   for show: 'lauda' (that puts .show-lauda on #modal — see UI.setShow).
+   Every other tent's popups are untouched by this file.
+
+   The look: a night race in Paulaner blue. A checkered flag runs along the top
+   and the bottom of the screen and never stops waving past, the popup is the
+   red of Niki's cap with a Paulaner-yellow title, and the clock is a pit-wall
+   timing board that heats up the longer the arms hold: yellow → orange → red.
+
+   Mama stands stage-left, like Pitbull does in hofbraeu.css. Her photo is a
+   phone screenshot with black bars above and below — the backdrop is nearly
+   black on that side on purpose, so the bars simply disappear into it.
+
+   Two halves in this file:
+     1) the set   — track, flags, Mama, the box, the title, the button
+     2) the game  — DO / DON'T columns, team rows, the big clock, the heckles
+
+   Timings come from CONFIG.SHOW in js/config.js. */
+
+/* ---- the track ---------------------------------------------------------------- */
+
+/* kill the plain grey wash — we paint our own night instead */
+#modal.show-lauda {
+  background: #05070f;
+}
+
+/* Three stacked layers, listed top of the stack down:
+     1) checkered flag along the top    } ONE black/white 2×2 tile, repeated
+     2) checkered flag along the bottom } sideways — these are the layers that move
+     3) the night: black on Mama's side, Paulaner blue towards the right */
+.show-lauda #modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(#f4f4f4 0% 25%, #0a0a0c 0% 50%),
+    repeating-conic-gradient(#f4f4f4 0% 25%, #0a0a0c 0% 50%),
+    linear-gradient(100deg, #000000 0 30%, #001a4d 60%, #003087);
+  background-size:
+    6vmin 6vmin,
+    6vmin 6vmin,
+    100% 100%;
+  background-position:
+    0 0,
+    0 100%,
+    0 0;
+  background-repeat: repeat-x, repeat-x, no-repeat;
+  animation: lauda-flags var(--show-chase, 1.1s) linear infinite;
+}
+.show-lauda #modal-backdrop[hidden] { display: none !important; }
+
+/* Slide both flags sideways by exactly one tile, so the loop has no visible
+   jump. They run in opposite directions; the night layer stays put. */
+@keyframes lauda-flags {
+  from { background-position: 0 0, 0 100%, 0 0; }
+  to   { background-position: 6vmin 0, -6vmin 100%, 0 0; }
+}
+
+/* Mama herself, stage-left. Same photo as the battle sprite — the url is
+   relative to THIS file, so the folder stays portable.
+   Hidden on a narrow screen (a phone has no room for a host). */
+.show-lauda #modal-backdrop::after {
+  content: '';
+  position: absolute;
+  left: 2vmin;
+  top: 8vmin;       /* clear of the two flags */
+  bottom: 8vmin;
+  width: 40vmin;
+  background: url('mama_lauda.jpg') center / contain no-repeat;
+  pointer-events: none;
+}
+@media (max-width: 900px) {
+  .show-lauda #modal-backdrop::after { display: none; }
+}
+
+/* the name of tonight's game, painted on the track above the bottom flag */
+.show-lauda #modal-backdrop::before {
+  content: 'MASSKRUGSTEMMEN';
+  position: absolute;
+  bottom: 7.5vmin;
+  right: 4vmin;
+  white-space: nowrap;
+  color: #f5c518;
+  font-size: 2.6vmin;
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  text-shadow: 0 0 12px rgba(245, 197, 24, 0.6);
+}
+
+/* The scoreboard normally sits UNDER a popup. In this tent the hosts give the
+   winner a point while the PROST screen is still up, so lift the team chips
+   above it — they stay clickable (click = +1, right-click = -1) and the , and .
+   keys show their effect. `:has()` reads: "while the lauda popup is open". */
+body:has(#modal.show-lauda:not([hidden])) #teambar {
+  z-index: 41;
+}
+
+/* ---- the popup, in the red of Niki's cap ------------------------------------------- */
+
+.show-lauda #modal-box {
+  position: relative;
+  background: linear-gradient(#10182e, #080c1a);
+  color: #f6f3e8;
+  border: 0;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 3px #e10600,                     /* the red edge */
+    0 0 0 9px #05070f,                     /* the dark gap */
+    0 0 38px 8px rgba(225, 6, 0, 0.35),    /* brake-light glow into the room */
+    0 18px 60px rgba(0, 0, 0, 0.7);
+  /* wide (the RULES screen puts DO and DON'T side by side), but leaving room
+     for Mama on the left at wide sizes */
+  max-width: min(64vw, 1000px);
+  width: min(64vw, 1000px);
+  margin-left: 32vmin;
+}
+@media (max-width: 900px) {
+  .show-lauda #modal-box { margin-left: 0; max-width: 88vw; width: 88vw; }
+}
+
+/* One-word titles, so make the one word BIG. */
+.show-lauda #modal-title {
+  background: linear-gradient(#ff1e12, #c10500);
+  color: #ffe45c;
+  border-radius: 6px 6px 0 0;
+  font-size: clamp(26px, 6vmin, 78px);
+  letter-spacing: 0.3em;
+  text-indent: 0.3em; /* letter-spacing pads the right side only — this re-centres the word */
+  padding: 1.4vmin 1.2vmin;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+.show-lauda #modal-body { font-weight: 600; }
+.show-lauda #modal-body p { margin: 0.6vmin 0; }
+
+/* progress dots: one per screen of the flow (RULES · CHAMPION · READY · HOLD · PROST).
+   Shape and pulse are shared in style.css — only the colors are ours. */
+.show-lauda .quiz-light {
+  background: #1c2440;
+  box-shadow: inset 0 0 0 2px #3a4468;
+}
+.show-lauda .quiz-light.done {
+  background: #9a7b00;
+  box-shadow: none;
+}
+.show-lauda .quiz-light.live {
+  background: #f5c518;
+  box-shadow: 0 0 14px 3px rgba(245, 197, 24, 0.8);
+}
+
+.show-lauda #modal-confirm {
+  background: linear-gradient(#ffd83a, #f5c518);
+  color: #10182e;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 22px rgba(245, 197, 24, 0.45);
+}
+
+/* ---- the game: shared bits ---------------------------------------------------------- */
+
+/* the one sentence above (or below) the main thing on each screen */
+.show-lauda .stemmen-lead {
+  font-size: clamp(16px, 3vmin, 38px);
+  line-height: 1.35;
+}
+
+/* the smaller sentence under it */
+.show-lauda .stemmen-tip {
+  font-size: clamp(13px, 2.2vmin, 28px);
+  color: #aab3cc;
+  margin-top: 1.6vmin;
+}
+
+/* a team's name, in its scoreboard color */
+.show-lauda .stemmen-team {
+  display: inline-block;
+  color: #fff;
+  font-weight: 900;
+  padding: 0.3vmin 1.4vmin;
+  border-radius: 0.8vmin;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- RULES: DO on the left, DON'T on the right --------------------------------------- */
+
+.show-lauda .stemmen-rules {
+  display: flex;
+  gap: 2vmin;
+  margin-top: 1.6vmin;
+  text-align: left;
+}
+@media (max-width: 900px) {
+  .show-lauda .stemmen-rules { flex-direction: column; }
+}
+
+.show-lauda .stemmen-col {
+  flex: 1;
+  background: #060914;
+  border-radius: 8px;
+  border: 3px solid;   /* color per column, below */
+  overflow: hidden;    /* the header band follows the rounded corners */
+}
+
+.show-lauda .stemmen-col h3 {
+  margin: 0;
+  padding: 0.8vmin;
+  text-align: center;
+  font-size: clamp(20px, 4vmin, 52px);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #060914;
+}
+
+.show-lauda .stemmen-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 1.2vmin 1.6vmin 1.4vmin;
+}
+
+.show-lauda .stemmen-col li {
+  position: relative;
+  padding: 0.7vmin 0 0.7vmin 4.4vmin; /* room for the ✓ / ✗ */
+  font-size: clamp(14px, 2.6vmin, 32px);
+  line-height: 1.25;
+}
+
+/* the ✓ / ✗ in front of every line */
+.show-lauda .stemmen-col li::before {
+  position: absolute;
+  left: 0.4vmin;
+  top: 0.4vmin;
+  font-size: 1.2em;
+  font-weight: 900;
+}
+
+/* green = DO */
+.show-lauda .stemmen-do { border-color: #3fbf4a; }
+.show-lauda .stemmen-do h3 { background: #3fbf4a; }
+.show-lauda .stemmen-do li::before { content: '✓'; color: #5fe06a; }
+.show-lauda .stemmen-do b { color: #9af0a1; }
+
+/* red = DON'T */
+.show-lauda .stemmen-dont { border-color: #e10600; }
+.show-lauda .stemmen-dont h3 { background: #e10600; color: #fff; }
+.show-lauda .stemmen-dont li::before { content: '✗'; color: #ff5a50; }
+.show-lauda .stemmen-dont b { color: #ff9a94; }
+
+/* ---- CHAMPION: one row per team --------------------------------------------------------- */
+
+.show-lauda .stemmen-who {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vmin;
+  margin: 2vmin 0;
+}
+
+.show-lauda .stemmen-who-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.6vmin;
+  background: #060914;
+  border: 3px solid #2a3458;
+  border-radius: 8px;
+  padding: 1.4vmin 2vmin;
+  font-size: clamp(18px, 3.4vmin, 44px);
+}
+
+.show-lauda .stemmen-arrow { color: #f5c518; font-weight: 900; }
+.show-lauda .stemmen-hot { color: #ffe45c; letter-spacing: 0.04em; }
+
+/* ---- READY / HOLD / PROST: the big clock ---------------------------------------------------- */
+
+.show-lauda .stemmen-clock {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums; /* digits keep their width, so the clock does not jitter */
+  font-size: clamp(60px, 22vmin, 280px);
+  font-weight: 900;
+  line-height: 1.05;
+  color: #ffe45c;
+  text-shadow: 0 0 28px rgba(245, 197, 24, 0.6);
+}
+
+/* the 3… 2… 1… before the clock starts: one huge white digit */
+.show-lauda .stemmen-clock.count {
+  color: #ffffff;
+  text-shadow: 0 0 28px rgba(255, 255, 255, 0.7);
+}
+
+/* a minute in (CONFIG.STEMMEN.WARM_S): orange */
+.show-lauda .stemmen-clock.warm {
+  color: #ff9a1f;
+  text-shadow: 0 0 28px rgba(255, 154, 31, 0.65);
+}
+
+/* two minutes in (CONFIG.STEMMEN.HOT_S): red, and pulsing once a second */
+.show-lauda .stemmen-clock.hot {
+  color: #ff3b30;
+  text-shadow: 0 0 28px rgba(255, 59, 48, 0.7);
+  animation: stemmen-pulse 1s ease-in-out infinite;
+}
+@keyframes stemmen-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+
+/* PROST: the winning time — a little smaller, the verdict needs room too */
+.show-lauda .stemmen-clock.final {
+  font-size: clamp(54px, 18vmin, 230px);
+}
+
+/* what Mama shouts under the running clock. min-height: a line that wraps to
+   two rows must not make the popup (and the clock) jump up and down. */
+.show-lauda .stemmen-heckle {
+  min-height: 2.7em;
+  font-size: clamp(16px, 3.2vmin, 40px);
+  font-style: italic;
+  color: #ffe45c;
+}
