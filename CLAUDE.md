@@ -74,8 +74,8 @@ version:
   `done(true)` → `awardBadge` → fanfare.
 - **A tent is open iff `CHALLENGES[<id>]` exists** — i.e. iff its `<script>` tag
   is in `index.html`. Map chip, tray slot, `0 / N` counter and win screen all
-  derive from that alone. Five tents are open; `js/tents/` holds exactly those
-  five folders and nothing else.
+  derive from that alone. Six tents are open; `js/tents/` holds exactly those
+  six folders and nothing else.
 - **One badge per tent.** `tentIsAvailable(tent)` = open and not yet won, and it
   is what the map paints from: coloured means "walk here", grey + ✓ means done,
   grey + number means not open yet. `startChallenge` refuses a won tent.
@@ -105,8 +105,20 @@ version:
   heckles in `CONFIG.STEMMEN`. It plays her own song via the host's `music:`
   field and never calls `Music.stop()`. **`mama-lauda.mp3` is gitignored — a
   commercial recording in a public repo; never commit it.** No `Teams.addPoints`.
+- **Ochsenbraterei (tent 13, a NOKIA 3310, `SNAKE II`) is the one game played
+  ON the TV**: both teams at the laptop at once, one champion each, team 1 on
+  `W A S D`, team 2 on the arrows. Head into anything (wall, table, ox,
+  Kellnerin, yourself, the other snake) costs a Lebkuchenherz; three each.
+  `RULES` → `KEYS` → `MENU` → `SNAKE` → `PROST`. Two files: `ochsenbraterei.js`
+  (host + popups) and `snake.js` (the global `SnakeDuel`: ASCII floor plan,
+  rules, sprites, its own `requestAnimationFrame` loop and steering `keydown`
+  listener — both stop themselves when `#snake-canvas` is gone, so
+  `game.reset()` is safe). Enter on the floor is start / PAUSE: Enter always
+  closes a popup, so `onFloorEnter` re-shows it every time. Numbers in
+  `CONFIG.SNAKE`. Snake points are the mini-game's own — no `Teams.addPoints`.
 - **The bar for opening a tent is a bespoke joke** — a booked guest with a name,
-  a move and their own game (Pitbull, Valdemar, Caesar, Jensen Huang, Mama Lauda). Generic skill
+  a move and their own game (Pitbull, Valdemar, Caesar, Jensen Huang, Mama Lauda,
+  the Nokia 3310). Generic skill
   mini-games were tried and cut; don't propose a twelfth variation on a timing
   bar as a way to open a tent.
 
