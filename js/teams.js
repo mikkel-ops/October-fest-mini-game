@@ -91,6 +91,9 @@ const Teams = {
     document.getElementById('intro').hidden = true;
     document.getElementById('teambar').hidden = false;
     Teams.refreshScoreboard();
+    // This Enter press is the first key press of the session — the moment the
+    // browser starts allowing sound — so the walking tune starts here.
+    Music.play('overworld');
     Teams.announceTurn(); // team 1 (or whoever is active) starts
   },
 

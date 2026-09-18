@@ -4,7 +4,7 @@ A tiny Pokémon-style Oktoberfest game for the browser: walk the Theresienwiese,
 step into all **14 big beer tents**, and collect each tent's beer-brand badge.
 Collect all 14 and... *O'zapft is!*
 
-Built for a party big screen: no build step, no dependencies, no assets.
+Built for a party big screen: no build step, no dependencies, no assets pipeline.
 
 ![Wiesn Quest — the Theresienwiese map with 3 of 14 badges collected](assets/screenshot.png)
 
@@ -30,6 +30,7 @@ and open <http://localhost:8000>. For the party: laptop + HDMI + Chrome, press *
 | ↑ ↓ or 1 / 2 / 3 | pick a FIGHT move on the battle screen |
 | , and . | host only: point for team 1 / team 2 (Shift subtracts) |
 | F | fullscreen |
+| M | music on / off |
 | ` (backtick) | debug mode |
 
 Step onto a tent's doorway to take its challenge and win its badge. The tray at
@@ -76,7 +77,8 @@ The console always has helpers, e.g. `game.give('hofbraeu')`, `game.teleport(21,
 | Crowd walking wrong, stuck NPCs | `js/npcs.js` |
 | Behaves wrong (movement, input, badges, win) | `js/game.js` |
 | Teams, turns, the intro screen, the scoreboard | `js/teams.js` |
-| Popups, badge tray, win screen, sounds | `js/ui.js` |
+| Popups, badge tray, win screen, beeps and jingles | `js/ui.js` |
+| Background music (walking tune, battle theme, volume, mute) | `js/music.js` + `CONFIG.MUSIC` in `js/config.js` |
 | **Open a tent / edit what happens inside one** | `js/tents/<id>/` (one folder each — see the README there) |
 | **Add / edit a random encounter** | `js/encounters/` (one file each — see the README there) |
 | Tent registry + the shared quiz flow | `js/challenges.js` |

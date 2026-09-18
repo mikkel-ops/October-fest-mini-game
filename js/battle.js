@@ -82,10 +82,12 @@ const Battle = {
     void flash.offsetWidth; // restart the CSS animation (same trick as the toast)
     flash.classList.add('flashing');
     Battle.phase = 'flash';
+    Music.stop(); // the walking tune cuts out, so the alarm below rings alone
     Battle.playIntroSound();
 
     // 2) ...then the battle screen with both sprites sliding in...
     Battle.after(850, function () {
+      Music.play('battle'); // the fight music kicks in as the screen appears
       flash.hidden = true;
       const battle = document.getElementById('battle');
       battle.classList.add('intro'); // hides text box + info boxes while sliding
@@ -395,6 +397,10 @@ const Battle = {
     if (battle) battle.hidden = true;
     const flash = document.getElementById('battle-flash');
     if (flash) flash.hidden = true;
+    // Every way out of a battle comes through here (finish, game.reset), so
+    // this one line is what brings the walking tune back. Before the very
+    // first key press the browser blocks it, which js/music.js shrugs off.
+    Music.play('overworld');
   },
 
   after: function (ms, fn) { Battle.timers.push(setTimeout(fn, ms)); },
