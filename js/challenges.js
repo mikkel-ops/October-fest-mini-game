@@ -174,6 +174,9 @@ function startChallenge(tent) {
 
   const runIt = function () {
     state.mode = 'modal';
+    // The challenge is action, not strolling. After a host battle the fight
+    // music is already on and this does nothing; a tent without a host gets it here.
+    Music.play('battle');
     challenge.run(tent, function (success) {
       if (success) {
         awardBadge(tent); // game.js: adds the badge, fanfare, win check

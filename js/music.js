@@ -1,5 +1,6 @@
 // music.js — the background music: the strolling tune while you walk the
-// Wiesn, and the battle clips while a wild friend (or a tent host) is on screen.
+// Wiesn, and the battle clips from the moment a wild friend (or a tent host)
+// appears until the player is back on the field — the tent quiz included.
 // If the music is wrong, too loud, or won't shut up, the fix is in this file.
 //
 // The short beeps and jingles are NOT here — those are generated notes in
@@ -18,10 +19,18 @@
 //                 on, back to clip 1 after the last. If a fight outlasts its
 //                 clip, the next clip in the list takes over — same order.
 //
-// WHO CALLS THIS — only three places, so the music can never get out of step:
-//   Teams.confirmIntro (js/teams.js)  → Music.play('overworld')
-//   Battle.start       (js/battle.js) → Music.stop(), then Music.play('battle')
-//   Battle.cancel      (js/battle.js) → Music.play('overworld')
+// THE RULE: the walking tune belongs to the field. It only plays while the
+// player can walk around (and on the win screen). Once a fight starts, the
+// battle music keeps going through everything that follows it — the tent quiz,
+// Kruse's duel, the badge fanfare, the "next team" banner — and the walking
+// tune only returns when the player is back on the field.
+//
+// WHO CALLS THIS — only a few places, so the music can never get out of step:
+//   Teams.confirmIntro (js/teams.js)      → Music.play('overworld')
+//   Teams.showIntro    (js/teams.js)      → Music.stop()  (the intro is silent)
+//   Battle.start       (js/battle.js)     → Music.stop(), then Music.play('battle')
+//   startChallenge     (js/challenges.js) → Music.play('battle')  (a tent with no host)
+//   loop               (js/game.js)       → Music.followMode(state.mode), every frame
 // plus the M key (js/game.js) → Music.toggleMute().
 //
 // Browsers refuse to play any sound before the first key press or click. The
@@ -71,6 +80,20 @@ const Music = {
       audio.loop = true; // goes round and round; currentTime is left alone so it resumes
       Music.start(audio);
     }
+  },
+
+  // Called every frame by the game loop with state.mode. This is THE place that
+  // brings the walking tune back: whenever the player is on the field ('walk')
+  // or the win screen, the walking tune plays. Every other mode is left alone,
+  // so a quiz or a turn banner keeps whatever was playing when it opened —
+  // battle music after a fight, the walking tune on the very first banner.
+  // Checking every frame (instead of at each "fight is over" spot) means a new
+  // mini-game can never forget to switch the music back. It costs nothing:
+  // play() returns straight away when that music is already on.
+  // ('intro' must stay out of this: before the first key press the browser
+  // blocks sound, and play() would then wrongly remember the tune as "on".)
+  followMode: function (mode) {
+    if (mode === 'walk' || mode === 'win') Music.play('overworld');
   },
 
   // Play the next clip of the battle playlist from its beginning, and move the

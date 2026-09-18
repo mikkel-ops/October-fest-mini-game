@@ -320,6 +320,7 @@ function init() {
 
 function loop(now) {
   update(now);
+  Music.followMode(state.mode); // back on the field → the walking tune returns (js/music.js)
   Npcs.update(now); // keep strolling during popups; freeze on the win screen
   Draw.render(now);
   Debug.updatePanel();

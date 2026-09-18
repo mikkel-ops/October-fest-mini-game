@@ -397,10 +397,10 @@ const Battle = {
     if (battle) battle.hidden = true;
     const flash = document.getElementById('battle-flash');
     if (flash) flash.hidden = true;
-    // Every way out of a battle comes through here (finish, game.reset), so
-    // this one line is what brings the walking tune back. Before the very
-    // first key press the browser blocks it, which js/music.js shrugs off.
-    Music.play('overworld');
+    // The music is deliberately NOT touched here. A battle ending does not mean
+    // the action is over — a tent host hands straight over to his quiz, Kruse to
+    // his duel — so the fight music keeps going. The walking tune comes back
+    // when the player is back on the field: Music.followMode in js/music.js.
   },
 
   after: function (ms, fn) { Battle.timers.push(setTimeout(fn, ms)); },
