@@ -1,0 +1,325 @@
+/* hacker.css — POEM WITH A GRAPHICS CARD, tent 4.
+   Everything here only applies while js/tents/hacker/hacker.js has asked for
+   show: 'cloud' (that puts .show-cloud on #modal — see UI.setShow).
+   Every other tent's popups are untouched by this file.
+
+   The look: the Hacker tent's painted "Heaven of the Bavarians" IS the cloud.
+   A Bavarian-blue sky with white clouds drifting across it, and along the floor
+   a server rack whose green LEDs chase each other. The popup itself is a
+   graphics card: black shroud, that green edge, green title band.
+
+   Why centred, like Käfer: Jensen is pixel art (a placeholder), not a photo, so
+   there is no cutout PNG to stand at the side of the stage. When the real photo
+   arrives, copy the `#modal-backdrop::after` block from hofbraeu.css.
+
+   Two halves in this file:
+     1) the set   — sky, rack, the box, the title, the button  (like kaefer.css)
+     2) the game  — DO / DON'T columns, team rows, the big clock, PHONES DOWN
+
+   Timings come from CONFIG.SHOW in js/config.js. */
+
+/* ---- the sky ---------------------------------------------------------------- */
+
+/* kill the plain grey wash — we paint our own heaven instead */
+#modal.show-cloud {
+  background: #0b2a4a;
+}
+
+/* Five stacked layers, listed top of the stack down:
+     1-3) three white clouds (soft ellipses) — the only layers that move
+     4)   the server rack, a dark band along the floor
+     5)   the sky */
+.show-cloud #modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse closest-side, rgba(255, 255, 255, 0.95) 0 55%, rgba(255, 255, 255, 0) 100%),
+    radial-gradient(ellipse closest-side, rgba(255, 255, 255, 0.85) 0 50%, rgba(255, 255, 255, 0) 100%),
+    radial-gradient(ellipse closest-side, rgba(255, 255, 255, 0.9) 0 60%, rgba(255, 255, 255, 0) 100%),
+    linear-gradient(#1c1c1f, #0a0a0c),
+    linear-gradient(#1f7fd1, #2a9df4 45%, #cfeaff);
+  background-size:
+    46vmin 16vmin,   /* cloud, top left */
+    40vmin 14vmin,   /* cloud, top right */
+    58vmin 20vmin,   /* cloud, low on the left */
+    100% 9vmin,      /* rack */
+    100% 100%;       /* sky */
+  background-position:
+    4% 8%,
+    94% 10%,
+    -4% 78%,
+    left bottom,
+    0 0;
+  background-repeat: no-repeat;
+  animation: cloud-drift var(--show-sweep, 6s) ease-in-out infinite alternate;
+}
+.show-cloud #modal-backdrop[hidden] { display: none !important; }
+
+/* Only the clouds drift — the rack must not wobble, so the other layers repeat
+   their starting position in both keyframes. */
+@keyframes cloud-drift {
+  from { background-position: 4% 8%, 94% 10%, -4% 78%, left bottom, 0 0; }
+  to   { background-position: 12% 9%, 86% 9%, 6% 79%, left bottom, 0 0; }
+}
+
+/* The rack's green LEDs, busy writing poetry. The row is ONE radial-gradient
+   dot tiled sideways (background-size sets the spacing), which is what lets
+   background-position slide it — same trick as Hofbräu's chase lights. */
+.show-cloud #modal-backdrop::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1.4vmin;
+  height: 1.6vmin;
+  background: radial-gradient(circle closest-side, #76b900 0 55%, rgba(118, 185, 0, 0) 62%) 0 0 / 5vmin 100% repeat-x;
+  animation: cloud-leds var(--show-chase, 1.1s) linear infinite;
+}
+@keyframes cloud-leds {
+  from { background-position: 0 0; }
+  to   { background-position: 5vmin 0; }
+}
+
+/* the name of tonight's game, stencilled on the rack */
+.show-cloud #modal-backdrop::before {
+  content: 'POEM WITH A GRAPHICS CARD';
+  position: absolute;
+  bottom: 5vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: #76b900;
+  font-size: 2.6vmin;
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  text-shadow: 0 0 12px rgba(118, 185, 0, 0.7);
+}
+
+/* The scoreboard normally sits UNDER a popup. In this tent the two hosts score
+   the poems while the LISTEN screen is still up, so lift the team chips above
+   it — they stay clickable (click = +1, right-click = -1) and the , and . keys
+   show their effect. `:has()` reads: "while the cloud popup is open". */
+body:has(#modal.show-cloud:not([hidden])) #teambar {
+  z-index: 41;
+}
+
+/* ---- the popup, as a graphics card ---------------------------------------------- */
+
+.show-cloud #modal-box {
+  position: relative;
+  background: linear-gradient(#232327, #121214);
+  color: #f2f5ea;
+  border: 0;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 3px #76b900,                     /* that green edge */
+    0 0 0 9px #0a0a0c,                     /* the black shroud */
+    0 0 38px 8px rgba(118, 185, 0, 0.35),  /* RGB glow into the room (green only, he insists) */
+    0 18px 60px rgba(0, 0, 0, 0.7);
+  /* wide: the RULES screen puts DO and DON'T side by side */
+  max-width: min(84vw, 1150px);
+  width: min(84vw, 1150px);
+}
+
+/* One-word titles, so make the one word BIG. */
+.show-cloud #modal-title {
+  background: linear-gradient(#8fd400, #76b900);
+  color: #0a0a0c;
+  border-radius: 6px 6px 0 0;
+  font-size: clamp(26px, 6vmin, 78px);
+  letter-spacing: 0.3em;
+  text-indent: 0.3em; /* letter-spacing pads the right side only — this re-centres the word */
+  padding: 1.4vmin 1.2vmin;
+}
+
+.show-cloud #modal-body { font-weight: 600; }
+.show-cloud #modal-body p { margin: 0.6vmin 0; }
+
+/* progress dots: one per screen of the flow (RULES · WHO · TIME · STOP · LISTEN).
+   Shape and pulse are shared in style.css — only the colors are ours. */
+.show-cloud .quiz-light {
+  background: #2e2e33;
+  box-shadow: inset 0 0 0 2px #4a4a52;
+}
+.show-cloud .quiz-light.done {
+  background: #4f7d00;
+  box-shadow: none;
+}
+.show-cloud .quiz-light.live {
+  background: #76b900;
+  box-shadow: 0 0 14px 3px rgba(118, 185, 0, 0.8);
+}
+
+.show-cloud #modal-confirm {
+  background: linear-gradient(#8fd400, #76b900);
+  color: #0a0a0c;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 22px rgba(118, 185, 0, 0.5);
+}
+
+/* ---- the game: shared bits ---------------------------------------------------------- */
+
+/* the one sentence above the main thing on each screen */
+.show-cloud .poem-lead {
+  font-size: clamp(16px, 3vmin, 38px);
+  line-height: 1.35;
+}
+
+/* the smaller sentence under it */
+.show-cloud .poem-tip {
+  font-size: clamp(13px, 2.2vmin, 28px);
+  color: #b9c2a8;
+  margin-top: 1.6vmin;
+}
+
+/* a team's name, in its scoreboard color */
+.show-cloud .poem-team {
+  display: inline-block;
+  color: #fff;
+  font-weight: 900;
+  padding: 0.3vmin 1.4vmin;
+  border-radius: 0.8vmin;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- RULES: DO on the left, DON'T on the right --------------------------------------- */
+
+.show-cloud .poem-rules {
+  display: flex;
+  gap: 2vmin;
+  margin-top: 1.6vmin;
+  text-align: left;
+}
+@media (max-width: 900px) {
+  .show-cloud .poem-rules { flex-direction: column; }
+}
+
+.show-cloud .poem-col {
+  flex: 1;
+  background: #0d0d0f;
+  border-radius: 8px;
+  border: 3px solid;   /* color per column, below */
+  overflow: hidden;    /* the header band follows the rounded corners */
+}
+
+.show-cloud .poem-col h3 {
+  margin: 0;
+  padding: 0.8vmin;
+  text-align: center;
+  font-size: clamp(20px, 4vmin, 52px);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #0a0a0c;
+}
+
+.show-cloud .poem-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 1.2vmin 1.6vmin 1.4vmin;
+}
+
+.show-cloud .poem-col li {
+  position: relative;
+  padding: 0.7vmin 0 0.7vmin 4.4vmin; /* room for the ✓ / ✗ */
+  font-size: clamp(14px, 2.6vmin, 32px);
+  line-height: 1.25;
+}
+
+/* the ✓ / ✗ in front of every line */
+.show-cloud .poem-col li::before {
+  position: absolute;
+  left: 0.4vmin;
+  top: 0.4vmin;
+  font-size: 1.2em;
+  font-weight: 900;
+}
+
+/* green = DO */
+.show-cloud .poem-do { border-color: #76b900; }
+.show-cloud .poem-do h3 { background: #76b900; }
+.show-cloud .poem-do li::before { content: '✓'; color: #8fd400; }
+.show-cloud .poem-do b { color: #b6f03a; }
+
+/* red = DON'T */
+.show-cloud .poem-dont { border-color: #e0323c; }
+.show-cloud .poem-dont h3 { background: #e0323c; color: #fff; }
+.show-cloud .poem-dont li::before { content: '✗'; color: #ff5a64; }
+.show-cloud .poem-dont b { color: #ff9aa0; }
+
+/* ---- WHO and LISTEN: one row per team -------------------------------------------------- */
+
+.show-cloud .poem-who {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vmin;
+  margin: 2vmin 0;
+}
+
+.show-cloud .poem-who-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.6vmin;
+  background: #0d0d0f;
+  border: 3px solid #3a3a40;
+  border-radius: 8px;
+  padding: 1.4vmin 2vmin;
+  font-size: clamp(18px, 3.6vmin, 46px);
+}
+
+.show-cloud .poem-arrow { color: #76b900; font-weight: 900; }
+.show-cloud .poem-host { color: #b6f03a; letter-spacing: 0.06em; }
+
+/* the 1 / 2 in front of the LISTEN rows: who plays first */
+.show-cloud .poem-num {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  line-height: 1.5em;
+  border-radius: 50%;
+  background: #76b900;
+  color: #0a0a0c;
+  font-weight: 900;
+}
+
+/* ---- TIME: the big clock --------------------------------------------------------------- */
+
+.show-cloud .poem-clock {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums; /* digits keep their width, so the clock does not jitter */
+  font-size: clamp(64px, 24vmin, 300px);
+  font-weight: 900;
+  line-height: 1.05;
+  color: #8fd400;
+  text-shadow: 0 0 28px rgba(118, 185, 0, 0.65);
+}
+
+/* the last stretch (CONFIG.POEM.LOW_TIME_S): red, and pulsing once a second */
+.show-cloud .poem-clock.low {
+  color: #ff4651;
+  text-shadow: 0 0 28px rgba(255, 70, 81, 0.7);
+  animation: poem-pulse 1s ease-in-out infinite;
+}
+@keyframes poem-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+/* ---- STOP ------------------------------------------------------------------------------ */
+
+.show-cloud .poem-stop {
+  font-size: clamp(36px, 11vmin, 150px);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #ff4651;
+  text-shadow: 0 0 28px rgba(255, 70, 81, 0.7);
+  margin: 1vmin 0 2vmin;
+  animation: poem-flash 0.5s steps(2, jump-none) infinite;
+}
+@keyframes poem-flash {
+  from { opacity: 1; }
+  to   { opacity: 0.35; }
+}

@@ -4,6 +4,10 @@ One **subfolder** in here = one tent that has something going on.
 
 ```
 js/tents/
+  hacker/                   tent 4 — Jensen Huang, an AI poetry duel on the phones
+    hacker.js                 the host, his move, the five screens (rules → clock → listen)
+    hacker.css                the cloud set + the DO / DON'T and clock layout
+    alarm.mp3                 the time's-up alarm
   hofbraeu/                 tent 3 — Pitbull, a Miami game-show quiz
     hofbraeu.js               the host, his move, the questions
     mr_world_wide.png         the man himself (battle sprite + stage host)
@@ -16,9 +20,9 @@ js/tents/
     weinzelt.css
 ```
 
-Three tents, three folders — that is the whole list. A tent is only worth opening
+Four tents, four folders — that is the whole list. A tent is only worth opening
 once it has a joke of its own as good as Pitbull's or Valdemar's; a generic
-mini-game is not the bar, so the other eleven stay closed until they earn one.
+mini-game is not the bar, so the other ten stay closed until they earn one.
 
 Same idea as `js/encounters/`, with one difference: a tent gets a **folder**,
 not a single file, because a tent challenge grows — photos, its own CSS, a
@@ -26,7 +30,7 @@ second round, a little game in another file. Drop those next to the `<id>.js`
 and they stay with their tent.
 
 Tents with nothing in here are **closed**: grey on the map, and walking in
-toasts "Noch zu!" instead of giving a badge. That is how the unfinished 11
+toasts "Noch zu!" instead of giving a badge. That is how the unfinished 10
 tents stay out of the way.
 
 > Tent **names, breweries, colors, logos and greetings** are not in here —
@@ -65,7 +69,7 @@ done(false)  → back to walking, tent stays unbadged (nothing uses this yet)
 Two rules that fall out of this:
 
 - **A tent is OPEN if and only if `CHALLENGES[<id>]` exists.** The map chip, the
-  badge tray slot, the `0 / 3` counter and the win screen all derive from that
+  badge tray slot, the `0 / 4` counter and the win screen all derive from that
   one fact via `tentIsOpen` / `openTents` in `js/challenges.js`. Register a key,
   and the tent lights up everywhere by itself.
 - **`done` must always be called**, or the game is stuck in `'modal'` mode with
@@ -131,8 +135,8 @@ onto the quiz-show stage. No engine code was needed for that.
 
 ## The shared quiz
 
-`runQuiz` in `js/challenges.js` — a 3-question multiple-choice flow, used by all
-three open tents:
+`runQuiz` in `js/challenges.js` — a 3-question multiple-choice flow, used by the
+three quiz tents (Hofbräu, Käfer, Weinzelt):
 
 ```js
 run: function (tent, done) {
@@ -186,17 +190,59 @@ It is called "show", not "stage", because `#stage` is already the canvas wrapper
 
 ## What each open tent does today
 
-Three open. The counter (`0 / 3`), the map colors and the win screen all follow
+Four open. The counter (`0 / 4`), the map colors and the win screen all follow
 from that by themselves.
 
 | Tent | Host | His move | Then |
 |---|---|---|---|
+| 4. Hacker | JENSEN (pixel art, placeholder) `:L5090` | `POEM WITH A GRAPHICS CARD` | a real-world AI poetry duel — see below (`show: 'cloud'`) |
 | 3. Hofbräu | PITBULL (photo) `:L305` | `MR. WORLDWIDE QUIZ` | quiz on a Miami game-show stage (`show: 'worldwide'`) |
 | 8. Käfer | CAESAR (pixel art) `:L44` | — | quiz, Romerriget |
 | 9. Weinzelt | VALDEMAR (photo) `:L89` | `DER ER RIGTIG MEGET INTERESSE` | quiz, the Danish housing market |
 
-The other eleven are closed, and stay that way until someone writes a guest for
+The other ten are closed, and stay that way until someone writes a guest for
 them worth walking in for.
+
+### Hacker: the one tent that is not a quiz
+
+`js/tents/hacker/hacker.js` is the example of a `run` that does **not** use
+`runQuiz`. It is a real-world duel (like Kruse's rugbrød duel on the street):
+both teams get Claude or ChatGPT to write a rhyming Danish Oktoberfest poem on
+their phones — one about MIKKEL, one about JAKOB — and the TV only explains
+the rules and runs the clock. Five popups, each with a **one-word title** so
+two tipsy teams can follow it from the sofa:
+
+| Screen | What it shows | Enter |
+|---|---|---|
+| `RULES` | a green **DO** column and a red **DON'T** column | next |
+| `WHO` | which team writes about which host (team whose turn it is → MIKKEL) | next |
+| `TIME` | the big clock, waiting at 4:00 | **starts** the clock; once running, Enter ends the round early |
+| `STOP` | `PHONES DOWN!` — `alarm.mp3` rings when the clock hits zero | next (and silences the alarm) |
+| `LISTEN` | a waiting screen: team 1's phone reads its poem aloud, then team 2's | ends the mini-game → `done(true)` |
+
+Things worth knowing before you touch it:
+
+- Every number is in `CONFIG.POEM` (`js/config.js`): `SECONDS` (240), the line
+  count, the host names, the low-time and tick thresholds, the alarm volume.
+- The clock counts from a fixed **deadline** (`performance.now()`), not ticks,
+  and its interval **stops itself** when its clock element is gone or `#modal`
+  is hidden — so `game.reset()` mid-round can't leave a timer running or throw
+  a `STOP` popup over the intro screen.
+- `EARLY_END_GUARD_MS`: for the first 5 seconds Enter just re-shows the clock,
+  so a double-tap on "START" can't end the round at 3:59.
+- The alarm is a plain `<audio>` element (works on `file://`, no `fetch()`),
+  created when the clock starts so it is loaded by zero. If it can't play, a
+  generated `UI.beep` buzzer sounds instead. An early end rings no alarm.
+- The battle music plays while the teams type. The `STOP` screen calls
+  `Music.stop()`, so the alarm rings alone and the room is quiet while the
+  phones read; the walking tune comes back by itself once the player is on the
+  field again (`Music.followMode`).
+- Every popup goes through one `screen()` helper that passes `show: 'cloud'`,
+  so none of them can forget it (the trap described above).
+- **Points are not wired in.** The two hosts are the jury (Creativity, Fun,
+  Rhyme — one point each) and score by hand with `,` / `.` or by clicking the
+  team chips; `hacker.css` lifts `#teambar` above the popup so that works while
+  `LISTEN` is still up.
 
 ## Three states, one glance at the map
 

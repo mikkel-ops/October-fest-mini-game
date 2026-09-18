@@ -31,6 +31,7 @@
   <title>Wiesn Quest 🍺</title>
   <link rel="stylesheet" href="style.css">
   <!-- a themed tent keeps its own looks in its own folder, next to its script -->
+  <link rel="stylesheet" href="js/tents/hacker/hacker.css">
   <link rel="stylesheet" href="js/tents/hofbraeu/hofbraeu.css">
   <link rel="stylesheet" href="js/tents/kaefer/kaefer.css">
   <link rel="stylesheet" href="js/tents/weinzelt/weinzelt.css">
@@ -50,7 +51,7 @@
   <!-- badge tray: 14 slots + counter -->
   <div id="traybar">
     <div id="tray"></div>
-    <div id="counter">0 / 3</div>
+    <div id="counter">0 / 4</div>
   </div>
 
   <!-- teams HUD: both names + scores, the ▶ marks whose turn it is.
@@ -172,8 +173,9 @@
   <script src="js/encounters/ice.js"></script>
   <script src="js/challenges.js"></script>
   <!-- One tag per OPEN tent (js/tents/<id>/<id>.js). A tent with no tag here
-       stays closed and grey on the map — that is how the eleven tents without
+       stays closed and grey on the map — that is how the ten tents without
        a challenge yet stay out of the party. -->
+  <script src="js/tents/hacker/hacker.js"></script>
   <script src="js/tents/hofbraeu/hofbraeu.js"></script>
   <script src="js/tents/kaefer/kaefer.js"></script>
   <script src="js/tents/weinzelt/weinzelt.js"></script>
