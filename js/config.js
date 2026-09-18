@@ -57,6 +57,19 @@ const CONFIG = {
     SWEEP_MS: 6000,  // one drift of the spotlight beams across the stage
   },
 
+  // Tent 4, POEM WITH A GRAPHICS CARD (js/tents/hacker/hacker.js): both teams
+  // write an AI poem on their phones while this clock runs on the TV.
+  POEM: {
+    SECONDS: 240,              // the clock: 4:00. Agreed range is 3–5 minutes (180–300)
+    MIN_LINES: 6,              // the poem is 6–10 lines — only shown on the RULES screen
+    MAX_LINES: 10,
+    HOSTS: ['MIKKEL', 'DJ JAKOB'], // [subject for the team whose turn it is, subject for the other team]
+    EARLY_END_GUARD_MS: 5000,  // Enter can't end the round this soon after the clock starts (double-tap guard)
+    TICK_LAST_S: 10,           // a beep per second for the last 10 seconds
+    LOW_TIME_S: 30,            // the clock turns red for the last 30 seconds
+    ALARM_VOLUME: 1.0,         // the time's-up alarm mp3, 0–1 — it is meant to be LOUD
+  },
+
   // world colors
   COLORS: {
     grass:      '#79b74a',

@@ -30,6 +30,7 @@
 //   Teams.showIntro    (js/teams.js)      → Music.stop()  (the intro is silent)
 //   Battle.start       (js/battle.js)     → Music.stop(), then Music.play('battle')
 //   startChallenge     (js/challenges.js) → Music.play('battle')  (a tent with no host)
+//   the STOP screen    (js/tents/hacker/hacker.js) → Music.stop()  (quiet for the alarm + the poems)
 //   loop               (js/game.js)       → Music.followMode(state.mode), every frame
 // plus the M key (js/game.js) → Music.toggleMute().
 //
