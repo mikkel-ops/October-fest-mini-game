@@ -208,7 +208,7 @@ them worth walking in for.
 `js/tents/hacker/hacker.js` is the example of a `run` that does **not** use
 `runQuiz`. It is a real-world duel (like Kruse's rugbrød duel on the street):
 both teams get Claude or ChatGPT to write a rhyming Danish Oktoberfest poem on
-their phones — one about MIKKEL, one about DJ JAKOB — and the TV only explains
+their phones — one about MIKKEL, one about JAKOB — and the TV only explains
 the rules and runs the clock. Five popups, each with a **one-word title** so
 two tipsy teams can follow it from the sofa:
 

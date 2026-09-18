@@ -117,7 +117,7 @@ you over to that tent's own challenge:
 | Tent | Guest | Then |
 |---|---|---|
 | 3. Hofbräu | Pitbull (Mr. Worldwide) | `MR. WORLDWIDE QUIZ` — the benches become a Miami game-show stage |
-| 4. Hacker | Jensen Huang, leather jacket over Lederhosen | `POEM WITH A GRAPHICS CARD` — a real-world duel: both teams get Claude or ChatGPT to write a rhyming Danish Oktoberfest poem on their phones (one about MIKKEL, one about DJ JAKOB) while a 4:00 clock runs on the TV. An alarm rings at zero, the phones read the poems aloud, the two hosts judge |
+| 4. Hacker | Jensen Huang, leather jacket over Lederhosen | `POEM WITH A GRAPHICS CARD` — a real-world duel: both teams get Claude or ChatGPT to write a rhyming Danish Oktoberfest poem on their phones (one about MIKKEL, one about JAKOB) while a 4:00 clock runs on the TV. An alarm rings at zero, the phones read the poems aloud, the two hosts judge |
 | 8. Käfer | Julius Caesar in Lederhosen | quiz: Romerriget |
 | 9. Weinzelt | Valdemar LaCour-Valentin, mægler | `DER ER RIGTIG MEGET INTERESSE` — then real facts about the Danish housing market |
 

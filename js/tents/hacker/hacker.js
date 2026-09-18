@@ -7,7 +7,7 @@
 //
 // THE GAME: both teams, at the same time, get an AI (Claude or ChatGPT) to
 // write a rhyming Danish Oktoberfest poem. One team's poem must name MIKKEL,
-// the other's DJ JAKOB — the two game hosts, who are also the jury. When the
+// the other's JAKOB — the two game hosts, who are also the jury. When the
 // clock hits zero an alarm rings, phones go down, and each team lets the AI
 // voice on their phone read the poem aloud.
 //
@@ -107,7 +107,7 @@ CHALLENGES.hacker = {
     const STEPS = 5;                            // RULES, WHO, TIME, STOP, LISTEN
 
     // Who writes about whom is fixed at the door: the team whose turn it is
-    // gets the first host (MIKKEL), the other team the second (DJ JAKOB).
+    // gets the first host (MIKKEL), the other team the second (JAKOB).
     const first = state.activeTeam;
     const second = 1 - first;
 
