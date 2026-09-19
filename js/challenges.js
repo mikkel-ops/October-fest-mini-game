@@ -79,8 +79,9 @@ function quizLights(i, total) {
   return html + '</div>';
 }
 
-// Shared 3-question flow. Always finishes with done(true) — the quiz is a
-// show for the TV, not a gate. Badge + fanfare still come from startChallenge.
+// Shared multiple-choice quiz flow. Takes any number of questions (Hofbräu and
+// Weinzelt run three, Käfer five) and always finishes with done(true) — the
+// quiz is a show for the TV, not a gate. Badge + fanfare come from startChallenge.
 //
 // spec fields:
 //   questions   — [{ q, choices, answer, right, wrong }]
