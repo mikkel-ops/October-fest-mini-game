@@ -116,6 +116,17 @@ version:
   `game.reset()` is safe). Enter on the floor is start / PAUSE: Enter always
   closes a popup, so `onFloorEnter` re-shows it every time. Numbers in
   `CONFIG.SNAKE`. Snake points are the mini-game's own — no `Teams.addPoints`.
+- **Weinzelt (tent 9, Valdemar, `HAMMERSLAG`) is a guess-the-price show**: REAL
+  homes from boligsiden.dk — five listing photos and two OSM maps each — both
+  teams write down their guess at the udbudspris, Valdemar reveals it with a
+  gavel (`CONFIG.HAMMERSLAG`), then data-driven bonus rounds. One visit plays
+  the WHOLE series, one round per home; the arrow keys browse a home's
+  photos/maps back and forth (a self-removing second keydown listener, snake.js
+  style). The homes and Valdemar's three phrase pools (DRØM / PRES / MARKED)
+  are CONTENT in `js/tents/weinzelt/boliger.js` (loaded before `weinzelt.js`);
+  a "lykkerider" home sets `hint:` + `markup:` and the game becomes guessing
+  the flipper's markup. No timers, no `Teams.addPoints` — hosts judge the
+  written guesses by hand.
 - **The bar for opening a tent is a bespoke joke** — a booked guest with a name,
   a move and their own game (Pitbull, Valdemar, Caesar, Jensen Huang, Mama Lauda,
   the Nokia 3310). Generic skill

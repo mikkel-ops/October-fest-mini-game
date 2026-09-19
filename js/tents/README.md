@@ -23,10 +23,12 @@ js/tents/
     paulaner.css              the race-track set + the DO / DON'T and clock layout
     mama_lauda.jpg            the photo (battle sprite + stage host)
     mama-lauda.mp3            her song — NOT in the repo, see "Paulaner" below
-  weinzelt/                 tent 9 — Valdemar the mægler, housing quiz
-    weinzelt.js
-    real_estate.png
-    weinzelt.css
+  weinzelt/                 tent 9 — Valdemar the mægler, HAMMERSLAG: guess the udbudspris
+    weinzelt.js               the host, his move, the screens (prospekt → fotos → gæt → hammerslag)
+    boliger.js                the homes + Valdemar's mægler lines — CONTENT, add new boliger here
+    boliger/<slug>/           five listing photos + two OpenStreetMap maps per home
+    real_estate.png           Valdemar himself (battle sprite + waiting by the door)
+    weinzelt.css              the åbent hus set (show: 'visning') + the HAMMERSLAG screens
 ```
 
 Six tents, six folders — that is the whole list. A tent is only worth opening
@@ -145,9 +147,9 @@ onto the quiz-show stage. No engine code was needed for that.
 
 ## The shared quiz
 
-`runQuiz` in `js/challenges.js` — a multiple-choice flow, used by the three quiz
-tents (Hofbräu, Käfer, Weinzelt). Any number of questions works; three is the
-house style, Käfer runs five:
+`runQuiz` in `js/challenges.js` — a multiple-choice flow, used by the two quiz
+tents (Hofbräu, Käfer — Weinzelt left for its own HAMMERSLAG show). Any number
+of questions works; three is the house style, Käfer runs five:
 
 ```js
 run: function (tent, done) {
@@ -210,7 +212,7 @@ from that by themselves.
 | 3. Hofbräu | PITBULL (photo) `:L305` | `MR. WORLDWIDE QUIZ` | quiz on a Miami game-show stage (`show: 'worldwide'`) |
 | 7. Paulaner | MAMA LAUDA (photo) `:L1` | `MASSKRUGSTEMMEN` | a real-world Maß-holding duel — see below (`show: 'lauda'`) |
 | 8. Käfer | CAESAR (pixel art) `:L44` | — | quiz, Romerriget |
-| 9. Weinzelt | VALDEMAR (photo) `:L89` | `DER ER RIGTIG MEGET INTERESSE` | quiz, the Danish housing market |
+| 9. Weinzelt | VALDEMAR (photo) `:L89` | `HAMMERSLAG` | guess the udbudspris of a real home — see below (`show: 'visning'`) |
 | 13. Ochsenbraterei | NOKIA 3310 (pixel art) `:L3310` | `SNAKE II` | a two-player snake duel on one keyboard — see below (`show: 'nokia'`) |
 
 The other eight are closed, and stay that way until someone writes a guest for
@@ -303,6 +305,63 @@ Things worth knowing before you touch it:
 - **Points are not wired in.** The hosts give the winner a point by hand with
   `,` / `.` or by clicking the team chips; `paulaner.css` lifts `#teambar`
   above the popup so that works while `PROST` is still up.
+
+### Weinzelt: HAMMERSLAG — guess the udbudspris
+
+`js/tents/weinzelt/weinzelt.js` is the TV format: Valdemar presents REAL homes
+from boligsiden.dk — real listing photos, two OpenStreetMap maps — and both
+teams write down what they think each **udbudspris** is. Closest team wins the
+round; the price is revealed with three gavel knocks. One visit plays the
+whole `BOLIGER` array, one round per home — the progress dots count homes, not
+screens. No clock, no typing: the TV only presents and reveals, the teams
+answer on paper, like the poem and Maß duels.
+
+Per home:
+
+| Screen | What it shows | Enter |
+|---|---|---|
+| `BOLIG k/N` | address, type, the mægler's own headline, a facts table | next |
+| `FOTO 1…5` | one listing photo per screen, Valdemar's patter underneath | next |
+| `DANMARK` | the whole country, a pin on the home | next |
+| `BELIGGENHED` | the neighbourhood map | next |
+| `HVAD KOSTER DEN?` | each team writes ONE number — pens down before Enter | **reveals** |
+| `HAMMERSLAG!` | the price, huge, gavel sound, Valdemar talking the market up | next |
+| `BONUS` / `SVAR` | 0–2 extra closest-guess rounds per home (from the data) — same game, gavel and big number on the reveal | next home |
+
+…and after the last home, `SOLGT!` ("Velkommen til resten af jeres liv") ends
+the visit → `done(true)`.
+
+Things worth knowing before you touch it:
+
+- **The arrow keys browse the gallery** (photos + the two maps, back and
+  forth); Enter always moves the show forward. Like snake.js's steering this
+  is a second `keydown` listener — it only acts while a gallery screen is up,
+  and removes itself when the modal is gone (tent done, or `game.reset()`
+  mid-visit).
+- **Adding bolig 5** is a data job: copy an entry in `boliger.js`, drop
+  `foto-1.webp … foto-5.webp` + `danmark.png` + `kort.png` into
+  `js/tents/weinzelt/boliger/<slug>/`, done. Facts go on the first screen —
+  but the vurdering and any prisfald belong in `priceContext` (the reveal),
+  because they give the price away.
+- **A "lykkerider" home** hands out the previous sale price on purpose — then
+  the game is guessing the markup. Set `hint:` (shown in a flashing 🚨
+  LYKKERIDER box on the guess screen) and `markup:` (a big red stamp on the
+  reveal, e.g. `'+89 % PÅ ÉT ÅR'`).
+- **Valdemar's lines are three pools in `boliger.js`**: `VALDEMAR_DROEM`
+  (photo patter), `VALDEMAR_PRES` (pressure, right before the guess),
+  `VALDEMAR_MARKED` (talking the market up, on every reveal). Dealt by fixed
+  index per screen — deterministic, so browsing back shows the same line and
+  tests can assert the text.
+- The photos are the mægler's own listing photos and the maps are
+  © OpenStreetMap contributors; sources and scrape date are commented in
+  `boliger.js`. If a photo file is missing the screen shows a polite
+  placeholder instead of a broken image, and Enter still works.
+- The gavel knocks come from `CONFIG.HAMMERSLAG` (`UI.beep`, generated — no
+  sound file). **No timers anywhere**, so there is nothing to leak on a
+  mid-flow `game.reset()`.
+- **Points are not wired in.** The hosts compare the written guesses and give
+  each round's point by hand with `,` / `.`, as at the Hacker and Paulaner
+  tents.
 
 ### Ochsenbraterei: the tent that is played ON the TV
 
