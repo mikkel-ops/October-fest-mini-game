@@ -11,7 +11,8 @@
 // CHALLENGES.<id>.host and always play when you walk into that tent.
 //
 // The battle screen itself (flash, slide-in, text box) is js/battle.js.
-// Chance and cooldown live in config.js (ENCOUNTER_CHANCE, ENCOUNTER_COOLDOWN).
+// Chance and cooldown live in config.js (ENCOUNTER_CHANCE, ENCOUNTER_CHANCE_MAX,
+// ENCOUNTER_COOLDOWN) — the chance grows with badges, see encounterChance().
 // How often each one may appear is enc.maxAppearances (counted on state).
 
 const ENCOUNTERS = []; // each file in js/encounters/ pushes one entry into this
@@ -25,6 +26,18 @@ function availableEncounters() {
   });
 }
 
+// The walk gets rowdier as the evening goes on: the encounter chance climbs
+// linearly from ENCOUNTER_CHANCE (no badges yet) to ENCOUNTER_CHANCE_MAX (all
+// badges won). Derived fresh on every roll from openBadgeCount()/openTents()
+// (challenges.js), so game.reset() needs no extra bookkeeping.
+function encounterChance() {
+  const total = openTents().length;
+  if (total === 0) return CONFIG.ENCOUNTER_CHANCE; // no open tents: keep the base
+  const progress = openBadgeCount() / total; // 0 → 1 as tents get done
+  return CONFIG.ENCOUNTER_CHANCE +
+         (CONFIG.ENCOUNTER_CHANCE_MAX - CONFIG.ENCOUNTER_CHANCE) * progress;
+}
+
 // Rolled exactly once per completed step (from onStepComplete in game.js),
 // but only when the player did not just enter a tent.
 function maybeEncounter() {
@@ -32,7 +45,7 @@ function maybeEncounter() {
   if (pool.length === 0) return; // everyone already met (and ICE iced out)
   if (state.stepsSinceEncounter < CONFIG.ENCOUNTER_COOLDOWN) return;
   state.lastRoll = Math.random();
-  if (state.lastRoll < CONFIG.ENCOUNTER_CHANCE) {
+  if (state.lastRoll < encounterChance()) {
     startEncounter(pool[Math.floor(Math.random() * pool.length)]);
   }
 }

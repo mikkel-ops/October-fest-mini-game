@@ -6,8 +6,9 @@ const CONFIG = {
   STEP_MS: 130,    // time to walk one tile — smaller = faster walking
   TURN_MS: 80,     // a key tap shorter than this only turns the player (Pokémon-style)
 
-  ENCOUNTER_CHANCE: 0.03,   // chance per step of a random encounter (0.03 = 3%)
-  ENCOUNTER_COOLDOWN: 10,   // minimum number of steps between two encounters
+  ENCOUNTER_CHANCE: 0.03,     // chance per step of a random encounter at the start (0.03 = 3%)
+  ENCOUNTER_CHANCE_MAX: 0.12, // chance once (nearly) all badges are won — climbs linearly per badge
+  ENCOUNTER_COOLDOWN: 10,     // minimum number of steps between two encounters
 
   START_TX: 21,    // player start tile, x (column)
   START_TY: 12,    // player start tile, y (row)

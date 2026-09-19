@@ -87,7 +87,7 @@ const Debug = {
       'player tile: (' + p.tx + ',' + p.ty + ')  char: "' + ch + '" (' + (LEGEND[ch] ? LEGEND[ch].name : '?') + ')',
       'badges: ' + openBadgeCount() + ' / ' + openTents().length + '  (open tents)',
       'steps since encounter: ' + state.stepsSinceEncounter + ' (cooldown ' + CONFIG.ENCOUNTER_COOLDOWN + ')',
-      'last encounter roll: ' + (state.lastRoll === null ? '—' : state.lastRoll.toFixed(3)) + ' vs ' + CONFIG.ENCOUNTER_CHANCE,
+      'last encounter roll: ' + (state.lastRoll === null ? '—' : state.lastRoll.toFixed(3)) + ' vs ' + encounterChance().toFixed(3) + ' (grows with badges)',
       'encounters left: ' + ENCOUNTERS.map(function (e) {
         const used = state.encounterCounts[e.id] || 0;
         const max = e.maxAppearances == null ? '∞' : e.maxAppearances;
