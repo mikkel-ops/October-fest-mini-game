@@ -145,8 +145,9 @@ onto the quiz-show stage. No engine code was needed for that.
 
 ## The shared quiz
 
-`runQuiz` in `js/challenges.js` — a 3-question multiple-choice flow, used by the
-three quiz tents (Hofbräu, Käfer, Weinzelt):
+`runQuiz` in `js/challenges.js` — a multiple-choice flow, used by the three quiz
+tents (Hofbräu, Käfer, Weinzelt). Any number of questions works; three is the
+house style, Käfer runs five:
 
 ```js
 run: function (tent, done) {
@@ -157,7 +158,7 @@ run: function (tent, done) {
     questions: [
       { q: 'Question?', choices: ['a', 'b', 'c'], answer: 0,
         right: 'shown when correct', wrong: 'shown when wrong' },
-      // ... three is the house style
+      // ... up to four choices — the keyboard maps 1–4 / A–D
     ],
     // optional dressing, see below
     show: 'worldwide', showTitle: '★ MR. WORLDWIDE QUIZ ★',
@@ -166,7 +167,7 @@ run: function (tent, done) {
 },
 ```
 
-Answers are picked with `1` / `2` / `3` or by clicking. Each answer plays a
+Answers are picked with `1`–`4` (or `A`–`D`) or by clicking. Each answer plays a
 sting (`UI.playSting`). The quiz always ends in `done(true)`.
 
 You do **not** have to use `runQuiz`. `run` can do anything: `UI.showModal`, a

@@ -205,12 +205,15 @@ function checkWin() {
   return true;
 }
 
-// 1/2/3 (and A/B/C) pick a quiz answer. Only consulted while a modal is open,
+// 1/2/3/4 (and A/B/C/D) pick a quiz answer. Only consulted while a modal is open,
 // so Digit3 never teleports during a quiz — debug teleports stay walk-only.
+// A/D also steer the player, but only in walk mode, so the two never collide
+// (pickQuizChoice ignores a key past the question's own choice count).
 function quizChoiceFromKey(code) {
   if (code === 'Digit1' || code === 'Numpad1' || code === 'KeyA') return 0;
   if (code === 'Digit2' || code === 'Numpad2' || code === 'KeyB') return 1;
   if (code === 'Digit3' || code === 'Numpad3' || code === 'KeyC') return 2;
+  if (code === 'Digit4' || code === 'Numpad4' || code === 'KeyD') return 3;
   return -1;
 }
 
