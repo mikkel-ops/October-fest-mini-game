@@ -249,6 +249,20 @@
   margin-top: 0.6vmin;
 }
 
+/* the two maps get more room than the photos — you have to be able to READ
+   street and town names from the sofa, they are the guessing clue. The box
+   itself must widen too (its normal 860px cap is what shrinks the maps), so
+   a box holding a map goes wide and centered — Valdemar peeks out behind it. */
+.show-visning .visning-photo.kort {
+  max-height: 58vmin;
+}
+.show-visning #modal-box:has(.visning-photo.kort) {
+  max-width: min(80vw, 1120px);
+  width: min(80vw, 1120px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* the photo is missing (cloned without the images?) — a polite placeholder
    the same size, so Enter still walks through the visit (weinzelt.js swaps
    it in via the img's onerror). */

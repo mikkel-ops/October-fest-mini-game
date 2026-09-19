@@ -105,8 +105,8 @@ CHALLENGES.weinzelt = {
     // placeholder instead of a broken-image icon, and Enter still works.
     // NOTE: these paths are relative to index.html (they go into <img src>),
     // NOT to this file — unlike the url() in weinzelt.css. Don't "fix" it.
-    function photoHtml(dir, file, caption) {
-      return '<img class="visning-photo" src="' + dir + file + '" alt="">'
+    function photoHtml(dir, file, caption, extra) {
+      return '<img class="visning-photo' + (extra ? ' ' + extra : '') + '" src="' + dir + file + '" alt="">'
         + '<div class="visning-caption">' + caption + ' · ⇦ ⇨ browse</div>';
     }
     function armPhotoFallback(dir) {
@@ -175,27 +175,30 @@ CHALLENGES.weinzelt = {
       //    Enter walks forward too, and off the last page it starts the guess.
       function showGallery(p) {
         const last = b.photos.length + 1;
-        let title, file, caption, patter, confirmText;
+        let title, file, caption, patter, confirmText, extra;
         if (p < b.photos.length) {
           title = 'FOTO ' + (p + 1) + '/' + b.photos.length;
           file = b.photos[p];
           caption = 'Foto ' + (p + 1) + '/' + b.photos.length + ' · ' + b.address;
           patter = quote(droemAt(k * 7 + 1 + p));
           confirmText = 'Weiter! [Enter]';
+          extra = '';
         } else if (p === b.photos.length) {
           title = 'DANMARK';
           file = b.danmark;
           caption = 'Where in Denmark? · © OpenStreetMap contributors';
           patter = quote(droemAt(k * 7 + 1 + p));
           confirmText = 'Zoom! [Enter]';
+          extra = 'kort'; // maps get the roomier size — see weinzelt.css
         } else {
           title = 'BELIGGENHED';
           file = b.kort;
           caption = b.city + ' · © OpenStreetMap contributors';
           patter = quote(presAt(k * 3));
           confirmText = 'Weiter! [Enter]';
+          extra = 'kort';
         }
-        screen(k, title, photoHtml(DIR, file, caption) + patter, confirmText,
+        screen(k, title, photoHtml(DIR, file, caption, extra) + patter, confirmText,
           p < last ? function () { showGallery(p + 1); } : showGuess);
         armPhotoFallback(DIR);
         gallery = { pos: p, last: last, jump: showGallery };
