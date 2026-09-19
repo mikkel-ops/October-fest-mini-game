@@ -6,7 +6,9 @@
    The look: an ejendomsmægler prospekt. Brochure daylight instead of Miami
    night — a floor-plan grid, a band of afternoon sun sweeping the room like
    at a viewing, a tilted TIL SALG sign, and Valdemar himself waiting by the
-   door. Timings come from CONFIG.SHOW in js/config.js. */
+   door. The HAMMERSLAG section at the bottom styles the screens weinzelt.js
+   builds: photos, maps, the hint box and the big price reveal. Timings come
+   from CONFIG.SHOW in js/config.js. */
 
 /* ---- the room ------------------------------------------------------------- */
 
@@ -183,4 +185,165 @@
   font-weight: 900;
   letter-spacing: 0.06em;
   box-shadow: 0 0 18px rgba(201, 162, 39, 0.5);
+}
+
+/* ---- HAMMERSLAG: the prospekt screens (built by weinzelt.js) --------------- */
+
+/* the address block on PROSPEKT */
+.show-visning .visning-address {
+  font-size: clamp(18px, 3.6vmin, 40px);
+  font-weight: 900;
+  color: #722f37;
+  letter-spacing: 0.02em;
+}
+.show-visning .visning-city {
+  color: #6b5a42;
+  font-size: clamp(12px, 2.2vmin, 24px);
+  margin-bottom: 1.2vmin;
+}
+
+/* the mægler's own headline, quoted like the sales material it is */
+.show-visning .visning-headline {
+  font-style: italic;
+  color: #3a2a24;
+  margin-bottom: 1.4vmin;
+}
+.show-visning .visning-headline span {
+  display: block;
+  font-style: normal;
+  font-size: 0.75em;
+  color: #8a7350;
+}
+
+/* the facts table: dotted leaders, like a salgsopstilling */
+.show-visning .visning-facts { margin-bottom: 1vmin; }
+.show-visning .visning-fact {
+  display: flex;
+  align-items: baseline;
+  gap: 1vmin;
+  font-size: clamp(12px, 2.1vmin, 24px);
+  padding: 0.3vmin 0;
+}
+.show-visning .visning-fact span { color: #722f37; font-weight: 900; white-space: nowrap; }
+.show-visning .visning-fact span::after { content: ':'; }
+
+/* a listing photo (or one of the two maps). #modal-box has NO max-height, so
+   the image must cap itself or a 1440×960 photo overflows the TV. */
+.show-visning .visning-photo {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 46vmin;
+  height: auto;
+  object-fit: contain;
+  background: #fffdf6;
+  border: 0.6vmin solid #fff;
+  outline: 1px solid #d9c9a8;
+  border-radius: 4px;
+  box-shadow: 0 1vmin 3vmin rgba(60, 30, 10, 0.3);
+}
+.show-visning .visning-caption {
+  text-align: center;
+  color: #8a7350;
+  font-size: clamp(10px, 1.7vmin, 18px);
+  margin-top: 0.6vmin;
+}
+
+/* the photo is missing (cloned without the images?) — a polite placeholder
+   the same size, so Enter still walks through the visit (weinzelt.js swaps
+   it in via the img's onerror). */
+.show-visning .visning-photo-missing {
+  min-height: 32vmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed #c9b98f;
+  border-radius: 4px;
+  color: #8a7350;
+  font-weight: 900;
+  padding: 2vmin;
+  text-align: center;
+}
+
+/* Valdemar's patter — one mægler line per screen, always in Danish */
+.show-visning .visning-quote {
+  font-style: italic;
+  color: #57222a;
+  background: rgba(245, 230, 200, 0.6);
+  border-left: 0.8vmin solid #c9a227;
+  border-radius: 0 4px 4px 0;
+  padding: 1vmin 1.4vmin;
+  margin-top: 1.2vmin;
+  font-size: clamp(12px, 2.1vmin, 24px);
+}
+/* the quotation marks come from weinzelt.js — a CSS ::after would land on its
+   own line below the attribution span */
+.show-visning .visning-quote span {
+  display: block;
+  font-style: normal;
+  font-size: 0.75em;
+  color: #8a7350;
+}
+
+/* the lykkerider hint on HVAD KOSTER DEN? — the previous sale price, handed
+   out on purpose, so the room can smell the markup */
+.show-visning .visning-hint {
+  background: #fdf3d1;
+  border: 2px solid #c9a227;
+  border-radius: 6px;
+  padding: 1.2vmin 1.6vmin;
+  margin: 1vmin 0;
+  font-weight: 900;
+  color: #3a2a24;
+}
+.show-visning .visning-hint::before {
+  content: 'HINT · ';
+  color: #b3212d;
+}
+
+/* a lykkerider home: the hint box turns into a flipping alarm — flashing
+   frame, screaming label. Subtle it is not; that is the point. */
+.show-visning .visning-hint.lykke {
+  border-width: 3px;
+  animation: visning-lykke 0.8s ease-in-out infinite alternate;
+}
+.show-visning .visning-hint.lykke::before {
+  content: '🚨 LYKKERIDER · ';
+  color: #b3212d;
+}
+@keyframes visning-lykke {
+  from { border-color: #c9a227; box-shadow: 0 0 0 rgba(179, 33, 45, 0); }
+  to   { border-color: #b3212d; box-shadow: 0 0 16px rgba(179, 33, 45, 0.55); }
+}
+
+/* the lykkerider verdict on the reveal: the markup as a big red stamp,
+   hammered in at the TIL SALG sign's hopeful angle */
+.show-visning .visning-markup {
+  width: fit-content;
+  margin: -0.6vmin auto 1vmin;
+  transform: rotate(-4deg);
+  padding: 0.6vmin 1.6vmin;
+  border: 0.5vmin solid #b3212d;
+  border-radius: 4px;
+  color: #b3212d;
+  font-weight: 900;
+  font-size: clamp(16px, 3.4vmin, 38px);
+  letter-spacing: 0.1em;
+  background: rgba(255, 253, 246, 0.85);
+  box-shadow: 0 0.6vmin 2vmin rgba(179, 33, 45, 0.3);
+}
+
+/* the number itself, readable from the sofa. Gold rules above and below —
+   the gavel sound comes from CONFIG.HAMMERSLAG. */
+.show-visning .visning-price {
+  text-align: center;
+  font-size: clamp(28px, 8vmin, 90px);
+  font-weight: 900;
+  color: #722f37;
+  letter-spacing: 0.04em;
+  border-top: 0.5vmin solid #c9a227;
+  border-bottom: 0.5vmin solid #c9a227;
+  padding: 1.4vmin 0;
+  margin: 1vmin 0 1.4vmin;
+  text-shadow: 0 2px 0 rgba(201, 162, 39, 0.35);
 }

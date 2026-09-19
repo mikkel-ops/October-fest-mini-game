@@ -94,6 +94,16 @@ const CONFIG = {
     ],
   },
 
+  // Tent 9, HAMMERSLAG (js/tents/weinzelt/): both teams guess the udbudspris
+  // of a real home from boligsiden.dk. The homes themselves — photos, prices,
+  // hints, bonus questions — are CONTENT and live in js/tents/weinzelt/boliger.js;
+  // only the knobs are here.
+  HAMMERSLAG: {
+    GAVEL_NOTES: [131, 131, 131],       // three auction knocks — første, anden, TREDJE gang
+    GAVEL_SPACING: 0.22,                // seconds between knocks
+    GAVEL_TYPE: 'square',               // UI.beep waveform — square thuds best
+  },
+
   // Tent 13, SNAKE II (js/tents/ochsenbraterei/): two snakes on one keyboard,
   // team 1 on W A S D, team 2 on the arrow keys. Run your head into anything —
   // the wall, a beer table, the ox, a Kellnerin, yourself, THE OTHER SNAKE — and
