@@ -93,7 +93,10 @@ and no `fetch()`, so the double-click `file://` launch keeps working.
 
 While walking, there's a small chance per step of a wild encounter — Game Boy
 grass-flash, then a battle screen (you in Lederhosen lower-left, the encounter
-upper-right). Friends appear **once** per session; ICE can show **three** times.
+upper-right). The chance grows as badges are collected (the evening gets
+rowdier): from `ENCOUNTER_CHANCE` with no badges up to `ENCOUNTER_CHANCE_MAX`
+with all of them, both in `js/config.js`. Friends appear **once** per session;
+ICE can show **three** times.
 
 After `A wild X appeared!` they either attack you or you pick from a FIGHT menu:
 
