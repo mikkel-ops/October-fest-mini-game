@@ -6,9 +6,11 @@
 //   kaefer.js    this — the host, his move, the questions
 //   kaefer.css   the Senate set (show: 'senate')
 //
-// The questions are deliberately NOT the pub-quiz three (Rubicon, veni vidi
-// vici, the Ides of March). Everybody knows those, so nothing lands. These three
-// are all true and all catch people out.
+// The questions are deliberately NOT the pub-quiz ones (Rubicon, veni vidi
+// vici, the Ides of March). Everybody knows those, so nothing lands. These five
+// all put Rome up against the Wiesn — beer, Maß sizes, Germania — true, on
+// theme, and they catch people out. Four choices each, picked with 1–4 / A–D
+// (quizChoiceFromKey in js/game.js grew the fourth key for this quiz).
 //
 // Registering this key is what makes tent 8 OPEN (see js/challenges.js).
 
@@ -95,25 +97,39 @@ CHALLENGES.kaefer = {
       },
       questions: [
         {
-          q: 'Pirates kidnapped a young Caesar and demanded 20 talents. What did he do?',
-          choices: ['Told them to demand 50 — he was worth more', 'Paid up and went quietly home', 'Escaped overboard in the night'],
-          answer: 0,
-          right: 'He was insulted by the price and made them raise it to 50. He also promised to crucify them all — everyone laughed. Once the ransom was paid he raised a fleet and did exactly that.',
-          wrong: 'He made them raise it to 50, being insulted by the price, and promised to crucify the lot. They took it as a joke. It was not a joke.',
+          q: 'Romans drank wine and held that beer was what peasants and barbarians poured down. What did they call the barbarian drink in Latin?',
+          choices: ['Posca', 'Cerevisia', 'Mulsum', 'Garum'],
+          answer: 1,
+          right: '<i>Cerevisia</i> — the root of the Spanish "cerveza". Garum was fermented fish sauce, and that would NOT go down well in a Hofbräu tent.',
+          wrong: '<i>Cerevisia</i> — the root of the Spanish "cerveza". Posca was watered vinegar, mulsum honeyed wine, and garum fish sauce — none of them belongs in a Maß.',
         },
         {
-          q: 'What did Romans rinse their mouths with to whiten their teeth?',
-          choices: ['Urine', 'Crushed pearls in vinegar', 'Sea salt and charcoal'],
+          q: 'Which Roman historian delivered history\'s first sour beer review, describing the Germans\' drink as "a liquid of barley or wheat, fermented into a certain resemblance to wine"?',
+          choices: ['Tacitus', 'Julius Caesar', 'Pliny the Younger', 'Suetonius'],
           answer: 0,
-          right: 'Urine — the ammonia genuinely whitens. Catullus mocks a man for grinning with it, and Vespasian later taxed the urine trade: <i>pecunia non olet</i>, money does not smell.',
-          wrong: 'Urine. The ammonia works, Catullus mocked a man for it, and Vespasian taxed the trade — <i>pecunia non olet</i>. Enjoy your Maß.',
+          right: 'Tacitus, in <i>Germania</i>, around AD 98. Two stars. Would not order again.',
+          wrong: 'Tacitus, in <i>Germania</i>, around AD 98 — two stars, would not order again. And no, not Caesar; the man is standing right in front of you.',
         },
         {
-          q: 'A Roman <i>vomitorium</i> was…?',
-          choices: ['The exit passage of an arena', 'A room for emptying your stomach mid-feast', 'The wine cellar under a villa'],
+          q: 'A Maß holds exactly one litre. Rome\'s standard cup, the <i>sextarius</i>, held 0.55 litres. What does that mean for the legionary in the beer tent?',
+          choices: ['He is done after half a Maß', 'He needs almost two to keep up', 'He needs four', 'He needs eight'],
+          answer: 1,
+          right: 'Almost two. Rome conquered three continents but never coped with a Bavarian serving size.',
+          wrong: 'Almost two sextarii to one Maß. Rome conquered three continents but never coped with a Bavarian serving size.',
+        },
+        {
+          q: 'Rome\'s worst defeat against the Germanic tribes was the Teutoburg Forest, AD 9, where three whole legions vanished. Who was behind it?',
+          choices: ['Vercingetorix', 'Attila', 'Arminius', 'Alaric'],
+          answer: 2,
+          right: 'Arminius — Cherusci chieftain and former Roman officer. Rome trained him itself. That is the kind of thing you call a bad onboarding.',
+          wrong: 'Arminius — Cherusci chieftain and former Roman officer. Rome trained him itself, which is the kind of thing you call a bad onboarding.',
+        },
+        {
+          q: 'Regensburg in Bavaria keeps some of the world\'s oldest taverns. What was the town called when Rome founded it as a legion camp in AD 179?',
+          choices: ['Castra Regina', 'Vindobona', 'Aquincum', 'Augusta Treverorum'],
           answer: 0,
-          right: 'An exit passage — it <i>spews</i> the crowd out of the arena after the games. The room-for-throwing-up is a Victorian invention.',
-          wrong: 'An exit passage that spews the crowd out of the arena. Nobody ever built a room for the other thing — that one is a Victorian myth.',
+          right: '<i>Castra Regina</i> — the fort on the river Regen. The legion marched off; the taverns stayed open.',
+          wrong: '<i>Castra Regina</i> — the fort on the river Regen. Vindobona became Vienna and Aquincum Budapest: good parties, wrong tent.',
         },
       ],
     }, done);
